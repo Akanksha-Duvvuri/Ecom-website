@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type Item = {
   id: number;
@@ -21,33 +22,50 @@ export default function FeaturedProducts() {
   }, []);
 
   return (
-    <section style={{ padding: "60px 40px" }}>
-      <h2 style={{ marginBottom: "30px" }}>New Arrivals</h2>
+    <section style={{ padding: "60px 40px", textAlign: "center" }}>
+      <h2 style={{ marginBottom: "30px", fontSize: "30px" }}>New Arrivals</h2>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-          gap: "20px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(330px, 1fr))",
+          gap: "30px",
         }}
       >
         {items.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              border: "1px solid #eee",
-              padding: "20px",
-              borderRadius: "10px",
-              transition: "0.2s",
-            }}
-          >
-            <h3>{item.name}</h3>
-            <p style={{ fontWeight: "bold" }}>${item.price}</p>
-            <p style={{ fontSize: "14px", color: "#555" }}>
-              {item.description}
-            </p>
-          </div>
-        ))}
+            <div
+                key={item.id}
+                style={{
+                border: "1px solid #eee",
+                padding: "20px",
+                borderRadius: "10px",
+                }}
+            >
+                <div
+                style={{
+                    position: "relative",
+                    width: "100%",
+                    height: "400px",
+                }}
+                >
+                <Image
+                    src={`/${item.image}`}
+                    alt={item.name}
+                    fill
+                    style={{
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                    }}
+                />
+                </div>
+
+                <h3 style={{ marginTop: "15px" }}>{item.name}</h3>
+                <p style={{ fontWeight: "bold" }}>${item.price}</p>
+                <p style={{ fontSize: "14px", color: "#555" }}>
+                {item.description}
+                </p>
+            </div>
+            ))}
       </div>
     </section>
   );

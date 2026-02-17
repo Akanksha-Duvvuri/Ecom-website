@@ -26,7 +26,7 @@ export default function Navbar() {
       {/* Left */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <Terminal size={28} />
-        <h2 style={{ margin: 0, fontWeight: 600 }}>Ternext</h2>
+        <h2 style={{ margin: 0, fontWeight: 600 }}>TurNext</h2>
       </div>
 
       {/* Center */}

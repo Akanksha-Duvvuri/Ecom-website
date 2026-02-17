@@ -20,7 +20,7 @@ export default function Footer() {
         }}
       >
         <div>
-          <h3>Ternext</h3>
+          <h3>TurNext</h3>
           <p style={{ color: "#aaa" }}>
             Modern essentials for modern builders.
           </p>

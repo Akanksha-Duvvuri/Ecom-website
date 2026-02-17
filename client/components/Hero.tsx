@@ -11,6 +11,7 @@ export default function Hero() {
       }}
     >
       <h1 style={{ fontSize: "60px", marginBottom: "20px", padding: "130px", }}>
+        TurNext <br></br>
         Build Your Identity.
       </h1>
       <p
