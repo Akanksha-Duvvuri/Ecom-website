@@ -16,6 +16,8 @@ client/.next
 .next
 .env
 
+server/.env
+
 # testing
 /coverage
 
