@@ -1,4 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Image from "next/image";
+import Footer from "@/components/Footer";
 
 type Item = {
   id: number;
@@ -8,26 +13,26 @@ type Item = {
   description: string;
 };
 
-async function getProduct(id: string): Promise<Item> {
-  const res = await fetch(`http://localhost:5000/items/${id}`, {
-    cache: "no-store",
-  });
+export default function ProductPage() {
+  const params = useParams();
+  const id = params.id as string;
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch product");
-  }
+  const [product, setProduct] = useState<Item | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
-  return res.json();
-}
+  useEffect(() => {
+    if (!id) return;
 
-export default async function ProductPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const product = await getProduct(params.id);
+    fetch(`http://localhost:5000/items/${id}`)
+      .then((res) => res.json())
+      .then((data) => setProduct(data))
+      .catch((err) => console.error(err));
+  }, [id]);
+
+  if (!product) return <p style={{ padding: "40px" }}>Loading...</p>;
 
   return (
+  <>
     <div style={{ padding: "60px 40px" }}>
       <div
         style={{
@@ -66,20 +71,49 @@ export default async function ProductPage({
             {product.description}
           </p>
 
+          <div style={{ display: "flex", gap: "15px", marginBottom: "30px" }}>
+            <button
+              style={{
+                border: "1px solid grey",
+                padding: "3px",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            >
+              -
+            </button>
+
+            <span>{quantity}</span>
+
+            <button
+              style={{
+                border: "1px solid grey",
+                padding: "3px",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+              onClick={() => setQuantity((q) => q + 1)}
+            >
+              +
+            </button>
+          </div>
+
           <button
             style={{
-              padding: "12px 24px",
-              backgroundColor: "black",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
+              border: "2px solid grey",
+              padding: "10px",
+              borderRadius: "10px",
               cursor: "pointer",
             }}
           >
-            Add to Cart
+            Add {quantity} to Cart
           </button>
         </div>
       </div>
     </div>
-  );
+
+    <Footer />
+  </>
+);
 }
