@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Item = {
   id: number;
@@ -33,38 +34,40 @@ export default function FeaturedProducts() {
         }}
       >
         {items.map((item) => (
-            <div
+            <Link
                 key={item.id}
-                style={{
-                border: "1px solid #eee",
-                padding: "20px",
-                borderRadius: "10px",
-                }}
+                href={`/items/${item.id}`}
+                style={{ textDecoration: "none", color: "inherit" }}
             >
                 <div
                 style={{
-                    position: "relative",
-                    width: "100%",
-                    height: "400px",
+                    border: "1px solid #eee",
+                    padding: "20px",
+                    borderRadius: "10px",
                 }}
                 >
-                <Image
+                <div
+                    style={{
+                    position: "relative",
+                    width: "100%",
+                    height: "350px",
+                    }}
+                >
+                    <Image
                     src={`/${item.image}`}
                     alt={item.name}
                     fill
-                    style={{
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                    }}
-                />
+                    style={{ objectFit: "cover", borderRadius: "8px" }}
+                    />
                 </div>
 
                 <h3 style={{ marginTop: "15px" }}>{item.name}</h3>
                 <p style={{ fontWeight: "bold" }}>${item.price}</p>
                 <p style={{ fontSize: "14px", color: "#555" }}>
-                {item.description}
+                    {item.description}
                 </p>
-            </div>
+                </div>
+            </Link>
             ))}
       </div>
     </section>
