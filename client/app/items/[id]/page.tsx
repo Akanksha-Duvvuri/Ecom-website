@@ -98,13 +98,15 @@ export default function ProductPage() {
             <p>Stock: {product.stock}</p>
 
             <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-              <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
+              <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                style={{ border: "1px solid white", padding: "3px", borderRadius: "25%", cursor: "pointer"}}
+                >
                 -
               </button>
 
               <span>{quantity}</span>
 
-              <button onClick={() => setQuantity((q) => q + 1)}>+</button>
+              <button onClick={() => setQuantity((q) => q + 1)} style={{ border: "1px solid white", padding: "3px", borderRadius: "25%", cursor: "pointer"}}>+</button>
             </div>
 
             <button

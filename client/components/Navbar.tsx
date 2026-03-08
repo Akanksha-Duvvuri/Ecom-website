@@ -15,25 +15,36 @@ export default function Navbar() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+  const updateCount = () => {
     const stored = localStorage.getItem("cart");
 
-    if (!stored) return;
+    if (!stored) {
+      setCount(0);
+      return;
+    }
 
     try {
       const cart = JSON.parse(stored);
 
-      if (Array.isArray(cart)) {
-        const total = cart.reduce(
-          (sum: number, item: any) => sum + (item.quantity || 0),
-          0
-        );
+      const total = cart.reduce(
+        (sum: number, item: any) => sum + (item.quantity || 0),
+        0
+      );
 
-        setCount(total);
-      }
-    } catch (err) {
-      console.error("Cart parse error:", err);
+      setCount(total);
+    } catch {
+      setCount(0);
     }
-  }, []);
+  };
+
+  updateCount();
+
+  window.addEventListener("cartUpdated", updateCount);
+
+  return () => {
+    window.removeEventListener("cartUpdated", updateCount);
+  };
+}, []);
 
   return (
     <nav
@@ -51,9 +62,12 @@ export default function Navbar() {
     >
       {/* Left */}
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <Terminal size={28} />
-        <h2 style={{ margin: 0, fontWeight: 600 }}>TurNext</h2>
-      </div>
+  <Terminal size={28} />
+
+    <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+      <h2 style={{ margin: 0, fontWeight: 600 }}>TurNext</h2>
+    </Link>
+  </div>
 
       {/* Center */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -95,7 +109,7 @@ export default function Navbar() {
                 position: "absolute",
                 top: "-8px",
                 right: "-10px",
-                background: "red",
+                background: "grey",
                 color: "white",
                 fontSize: "12px",
                 padding: "2px 6px",

@@ -19,18 +19,34 @@ export default function CartPage() {
     if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  const removeItem = (id: string) => {
-            const updated = cart
-                .map((item) =>
-                item.id === id
-                    ? { ...item, quantity: item.quantity - 1 }
-                    : item
-                )
-                .filter((item) => item.quantity > 0);
+  const updateCart = (updated: CartItem[]) => {
+  setCart(updated);
+  localStorage.setItem("cart", JSON.stringify(updated));
 
-            setCart(updated);
-            localStorage.setItem("cart", JSON.stringify(updated));
-            };
+  window.dispatchEvent(new Event("cartUpdated"));
+};
+
+  const increase = (id: string) => {
+    const updated = cart.map((item) =>
+      item.id === id
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    );
+
+    updateCart(updated);
+  };
+
+  const decrease = (id: string) => {
+    const updated = cart
+      .map((item) =>
+        item.id === id
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+      .filter((item) => item.quantity > 0);
+
+    updateCart(updated);
+  };
 
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -41,14 +57,9 @@ export default function CartPage() {
     <main style={{ padding: "60px 40px" }}>
       <h1 style={{ marginBottom: "30px" }}>Your Cart</h1>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "40px",
-          alignItems: "flex-start",
-        }}
-      >
-        {/* LEFT SIDE — CART ITEMS */}
+      <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
+        
+        {/* LEFT SIDE: CART ITEMS */}
         <div style={{ flex: 2 }}>
           {cart.length === 0 && <p>Your cart is empty.</p>}
 
@@ -58,18 +69,12 @@ export default function CartPage() {
               style={{
                 display: "flex",
                 gap: "20px",
-                borderBottom: "1px solid #eee",
                 padding: "20px 0",
+                borderBottom: "1px solid #eee",
                 alignItems: "center",
               }}
             >
-              <div
-                style={{
-                  position: "relative",
-                  width: "120px",
-                  height: "120px",
-                }}
-              >
+              <div style={{ position: "relative", width: "120px", height: "120px" }}>
                 <Image
                   src={item.img}
                   alt={item.name}
@@ -81,25 +86,48 @@ export default function CartPage() {
               <div style={{ flex: 1 }}>
                 <h3>{item.name}</h3>
                 <p>${item.price}</p>
-                <p>Quantity: {item.quantity}</p>
-              </div>
 
-              <button
-                onClick={() => removeItem(item.id)}
-                style={{
-                  padding: "6px 12px",
-                  border: "1px solid grey",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                Remove
-              </button>
+                {/* Quantity Controls */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    marginTop: "10px",
+                  }}
+                >
+                  <p>Quantity</p> <br></br>
+                  <button
+                    onClick={() => decrease(item.id)}
+                    style={{
+                      padding: "4px 10px",
+                      border: "1px solid grey",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    -
+                  </button>
+
+                  <span>{item.quantity}</span>
+
+                  <button
+                    onClick={() => increase(item.id)}
+                    style={{
+                      padding: "4px 10px",
+                      border: "1px solid grey",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* RIGHT SIDE — PRICE SUMMARY */}
         {cart.length > 0 && (
           <div
             style={{
@@ -116,8 +144,8 @@ export default function CartPage() {
               Items: {cart.reduce((sum, i) => sum + i.quantity, 0)}
             </p>
 
-            <p style={{ marginBottom: "20px", fontWeight: "bold" }}>
-              Total: ${total}
+            <p style={{ fontWeight: "bold", marginBottom: "20px" }}>
+              Total: ${total.toFixed(2)}
             </p>
 
             <button
