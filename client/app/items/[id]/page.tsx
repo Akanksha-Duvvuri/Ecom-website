@@ -106,7 +106,12 @@ export default function ProductPage() {
 
               <span>{quantity}</span>
 
-              <button onClick={() => setQuantity((q) => q + 1)} style={{ border: "1px solid white", padding: "3px", borderRadius: "25%", cursor: "pointer"}}>+</button>
+              <button  onClick={() =>
+                              setQuantity((q) =>
+                                product && q < product.stock ? q + 1 : q
+                              )
+                            } 
+              style={{ border: "1px solid white", padding: "3px", borderRadius: "25%", cursor: "pointer"}}>+</button>
             </div>
 
             <button
@@ -115,6 +120,7 @@ export default function ProductPage() {
                 marginTop: "20px",
                 padding: "10px",
                 border: "1px solid grey",
+                cursor: "pointer"
               }}
             >
               Add {quantity} to Cart
