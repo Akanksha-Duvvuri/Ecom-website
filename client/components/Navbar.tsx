@@ -8,6 +8,8 @@ import {
   Search,
 } from "lucide-react";
 
+import Link from "next/link";
+
 export default function Navbar() {
   return (
     <nav
@@ -57,9 +59,13 @@ export default function Navbar() {
       </div>
 
       {/* Right */}
-      <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+     <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
         <User size={22} style={{ cursor: "pointer" }} />
-        <ShoppingCart size={22} style={{ cursor: "pointer" }} />
+
+        <Link href="/cart">
+          <ShoppingCart size={22} style={{ cursor: "pointer" }} />
+        </Link>
+
         <SlidersHorizontal size={22} style={{ cursor: "pointer" }} />
       </div>
     </nav>

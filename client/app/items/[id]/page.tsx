@@ -27,23 +27,43 @@ export default function ProductPage() {
     if (!id) return;
 
     const fetchProduct = async () => {
-      try {
-        const ref = doc(db, "products", id);
-        const snapshot = await getDoc(ref);
+      const ref = doc(db, "products", id);
+      const snap = await getDoc(ref);
 
-        if (snapshot.exists()) {
-          setProduct({
-            id: snapshot.id,
-            ...(snapshot.data() as Omit<Item, "id">),
-          });
-        }
-      } catch (error) {
-        console.error("Error loading product:", error);
+      if (snap.exists()) {
+        setProduct({
+          id: snap.id,
+          ...(snap.data() as Omit<Item, "id">),
+        });
       }
     };
 
     fetchProduct();
   }, [id]);
+
+  function addToCart() {
+    if (!product) return;
+
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    const existing = cart.find((item: any) => item.id === product.id);
+
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        img: product.img,
+        quantity,
+      });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // alert("Added to cart!");
+  }
 
   if (!product) return <p style={{ padding: "40px" }}>Loading...</p>;
 
@@ -57,7 +77,6 @@ export default function ProductPage() {
             gap: "40px",
           }}
         >
-          {/* Image */}
           <div
             style={{
               position: "relative",
@@ -73,60 +92,27 @@ export default function ProductPage() {
             />
           </div>
 
-          {/* Info */}
           <div>
-            <h1 style={{ fontSize: "32px", marginBottom: "20px" }}>
-              {product.name}
-            </h1>
+            <h1>{product.name}</h1>
+            <p>${product.price}</p>
+            <p>Stock: {product.stock}</p>
 
-            <p
-              style={{
-                fontSize: "22px",
-                fontWeight: "bold",
-                marginBottom: "20px",
-              }}
-            >
-              ${product.price}
-            </p>
-
-            <p style={{ color: "#555", marginBottom: "20px" }}>
-              Stock: {product.stock}
-            </p>
-
-            <div style={{ display: "flex", gap: "15px", marginBottom: "30px" }}>
-              <button
-                style={{
-                  border: "1px solid grey",
-                  padding: "3px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              >
+            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+              <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
                 -
               </button>
 
               <span>{quantity}</span>
 
-              <button
-                style={{
-                  border: "1px solid grey",
-                  padding: "3px",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                }}
-                onClick={() => setQuantity((q) => q + 1)}
-              >
-                +
-              </button>
+              <button onClick={() => setQuantity((q) => q + 1)}>+</button>
             </div>
 
             <button
+              onClick={addToCart}
               style={{
-                border: "2px solid grey",
+                marginTop: "20px",
                 padding: "10px",
-                borderRadius: "10px",
-                cursor: "pointer",
+                border: "1px solid grey",
               }}
             >
               Add {quantity} to Cart
