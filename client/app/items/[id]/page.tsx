@@ -12,8 +12,8 @@ type Item = {
   id: string;
   name: string;
   price: number;
-  image: string;
   stock: number;
+  img: string;
 };
 
 export default function ProductPage() {
@@ -66,7 +66,7 @@ export default function ProductPage() {
             }}
           >
             <Image
-              src={product.image}
+              src={product.img}
               alt={product.name}
               fill
               style={{ objectFit: "cover", borderRadius: "12px" }}

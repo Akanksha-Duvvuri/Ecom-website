@@ -12,7 +12,7 @@ type Product = {
   name: string;
   price: number;
   stock: number;
-  image: string;
+  img: string;
 };
 
 export default function FeaturedProducts() {
@@ -51,7 +51,7 @@ export default function FeaturedProducts() {
         {products.map((product) => (
           <Link
             key={product.id}
-            href={`/products/${product.id}`}
+            href={`/items/${product.id}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <div
@@ -59,6 +59,7 @@ export default function FeaturedProducts() {
                 border: "1px solid #eee",
                 padding: "20px",
                 borderRadius: "10px",
+                cursor: "pointer",
               }}
             >
               <div
