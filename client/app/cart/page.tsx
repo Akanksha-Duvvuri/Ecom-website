@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 type CartItem = {
   id: string;
   name: string;
@@ -62,6 +65,26 @@ export default function CartPage() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const checkout = async () => {
+    const stored = localStorage.getItem("cart");
+    if (!stored) return;
+
+    const cartItems = JSON.parse(stored);
+
+    const total = cartItems.reduce(
+      (sum: number, item: any) => sum + item.price * item.quantity,
+      0
+    );
+
+    await addDoc(collection(db, "orders"), {
+      items: cartItems,
+      total,
+      createdAt: serverTimestamp(),
+    });
+
+    localStorage.removeItem("cart");
+    };
 
   return (
     <main style={{ padding: "60px 40px" }}>
@@ -176,16 +199,17 @@ export default function CartPage() {
             </p>
 
             <button
-              style={{
-                width: "100%",
-                padding: "12px",
-                border: "2px solid black",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              Checkout
-            </button>
+                onClick={checkout}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  border: "2px solid black",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                Checkout
+          </button>
           </div>
         )}
       </div>
