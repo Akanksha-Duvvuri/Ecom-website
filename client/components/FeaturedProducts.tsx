@@ -1,25 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 type Item = {
-  id: number;
+  id: string;
   name: string;
   price: number;
-  image: string;
-  description: string;
+  stock: number;
 };
 
 export default function FeaturedProducts() {
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/items")
-      .then((res) => res.json())
-      .then((data) => setItems(data))
-      .catch((err) => console.error(err));
+    const fetchProducts = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "products"));
+
+        const products = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<Item, "id">),
+        }));
+
+        console.log(products);
+
+        setItems(products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
@@ -34,41 +49,24 @@ export default function FeaturedProducts() {
         }}
       >
         {items.map((item) => (
-            <Link
-                key={item.id}
-                href={`/items/${item.id}`}
-                style={{ textDecoration: "none", color: "inherit" }}
+          <Link
+            key={item.id}
+            href={`/items/${item.id}`}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <div
+              style={{
+                border: "1px solid #eee",
+                padding: "20px",
+                borderRadius: "10px",
+              }}
             >
-                <div
-                style={{
-                    border: "1px solid #eee",
-                    padding: "20px",
-                    borderRadius: "10px",
-                }}
-                >
-                <div
-                    style={{
-                    position: "relative",
-                    width: "100%",
-                    height: "350px",
-                    }}
-                >
-                    <Image
-                    src={`/${item.image}`}
-                    alt={item.name}
-                    fill
-                    style={{ objectFit: "cover", borderRadius: "8px" }}
-                    />
-                </div>
-
-                <h3 style={{ marginTop: "15px" }}>{item.name}</h3>
-                <p style={{ fontWeight: "bold" }}>${item.price}</p>
-                <p style={{ fontSize: "14px", color: "#555" }}>
-                    {item.description}
-                </p>
-                </div>
-            </Link>
-            ))}
+              <h3>{item.name}</h3>
+              <p style={{ fontWeight: "bold" }}>${item.price}</p>
+              <p style={{ color: "#555" }}>Stock: {item.stock}</p>
+            </div>
+          </Link>
+        ))}
       </div>
     </section>
   );
