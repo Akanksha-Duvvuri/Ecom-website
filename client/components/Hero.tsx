@@ -6,7 +6,7 @@ export default function Hero() {
       style={{
         // padding: "100px 40px",
         textAlign: "center",
-        background: "linear-gradient(to bottom, #000000ff, #104f47ff)",
+        background: "linear-gradient(to bottom, #000000ff, #2f0909)",
         height: "95vh",
       }}
     >

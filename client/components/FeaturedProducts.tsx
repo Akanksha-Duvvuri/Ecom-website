@@ -1,34 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-type Item = {
+type Product = {
   id: string;
   name: string;
   price: number;
   stock: number;
+  image: string;
 };
 
 export default function FeaturedProducts() {
-  const [items, setItems] = useState<Item[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const snapshot = await getDocs(collection(db, "products"));
 
-        const products = snapshot.docs.map((doc) => ({
+        const productList = snapshot.docs.map((doc) => ({
           id: doc.id,
-          ...(doc.data() as Omit<Item, "id">),
+          ...(doc.data() as Omit<Product, "id">),
         }));
 
-        console.log(products);
-
-        setItems(products);
+        setProducts(productList);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -48,10 +48,10 @@ export default function FeaturedProducts() {
           gap: "30px",
         }}
       >
-        {items.map((item) => (
+        {products.map((product) => (
           <Link
-            key={item.id}
-            href={`/items/${item.id}`}
+            key={product.id}
+            href={`/products/${product.id}`}
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <div
@@ -61,9 +61,24 @@ export default function FeaturedProducts() {
                 borderRadius: "10px",
               }}
             >
-              <h3>{item.name}</h3>
-              <p style={{ fontWeight: "bold" }}>${item.price}</p>
-              <p style={{ color: "#555" }}>Stock: {item.stock}</p>
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "300px",
+                }}
+              >
+                <Image
+                  src={product.img}
+                  alt={product.name}
+                  fill
+                  style={{ objectFit: "cover", borderRadius: "8px" }}
+                />
+              </div>
+
+              <h3 style={{ marginTop: "15px" }}>{product.name}</h3>
+              <p style={{ fontWeight: "bold" }}>${product.price}</p>
+              <p style={{ color: "#666" }}>Stock: {product.stock}</p>
             </div>
           </Link>
         ))}
