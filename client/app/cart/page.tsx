@@ -12,6 +12,7 @@ type CartItem = {
   price: number;
   img: string;
   quantity: number;
+  stock: number;
 };
 
 import { doc, updateDoc, increment } from "firebase/firestore";
