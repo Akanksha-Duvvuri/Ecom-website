@@ -14,6 +14,8 @@ type CartItem = {
   quantity: number;
 };
 
+import { doc, updateDoc, increment } from "firebase/firestore";
+
 export default function CartPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
 
@@ -67,24 +69,42 @@ export default function CartPage() {
   );
 
   const checkout = async () => {
-    const stored = localStorage.getItem("cart");
-    if (!stored) return;
+  const stored = localStorage.getItem("cart");
+  if (!stored) return;
 
-    const cartItems = JSON.parse(stored);
+  const cartItems = JSON.parse(stored);
 
-    const total = cartItems.reduce(
-      (sum: number, item: any) => sum + item.price * item.quantity,
-      0
-    );
+  const total = cartItems.reduce(
+    (sum: number, item: any) => sum + item.price * item.quantity,
+    0
+  );
 
+  try {
     await addDoc(collection(db, "orders"), {
       items: cartItems,
       total,
       createdAt: serverTimestamp(),
     });
 
+    for (const item of cartItems) {
+      const productRef = doc(db, "products", item.id);
+
+      await updateDoc(productRef, {
+        stock: increment(-item.quantity),
+      });
+    }
+
+
     localStorage.removeItem("cart");
-    };
+
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    // alert("Order placed successfully!");
+
+  } catch (error) {
+    console.error("Checkout error:", error);
+  }
+};
 
   return (
     <main style={{ padding: "60px 40px" }}>
