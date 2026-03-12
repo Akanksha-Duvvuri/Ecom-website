@@ -39,7 +39,7 @@ export default function FeaturedProducts() {
 
   return (
     <section style={{ padding: "60px 40px", textAlign: "center" }}>
-      <h2 style={{ marginBottom: "30px", fontSize: "30px" }}>New Arrivals</h2>
+      <h2 style={{ marginBottom: "30px", fontSize: "30px" }}>Featured Products</h2>
 
       <div
         style={{
