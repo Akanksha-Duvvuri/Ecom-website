@@ -18,14 +18,14 @@ type Product = {
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+  useEffect(() => { //retrives from the firebase firestore
+    const fetchProducts = async () => { //what this does is it goes to the database, goes to the collection named products and gets all the documents from there. 
       try {
         const snapshot = await getDocs(collection(db, "products"));
 
         const productList = snapshot.docs.map((doc) => ({
           id: doc.id,
-          ...(doc.data() as Omit<Product, "id">),
+          ...(doc.data() as Omit<Product, "id">), //gets document ka id and converts it to a JS object
         }));
 
         setProducts(productList);

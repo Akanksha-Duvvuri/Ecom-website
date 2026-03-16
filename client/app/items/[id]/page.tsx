@@ -20,8 +20,8 @@ export default function ProductPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const [product, setProduct] = useState<Item | null>(null);
-  const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<Item | null>(null); //initially the product state is null, later once you render the data from the db, it gets the product data. 
+  const [quantity, setQuantity] = useState(1); //initiatlly quantity is 1. 
 
   useEffect(() => {
     if (!id) return;
@@ -61,8 +61,6 @@ export default function ProductPage() {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-
-    // alert("Added to cart!");
   }
 
   if (!product) return <p style={{ padding: "40px" }}>Loading...</p>;
@@ -81,7 +79,7 @@ export default function ProductPage() {
             style={{
               position: "relative",
               width: "100%",
-              height: "400px",
+              height: "450px",
             }}
           >
             <Image
@@ -97,7 +95,7 @@ export default function ProductPage() {
             <p>${product.price}</p>
             <p>Stock: {product.stock}</p>
 
-            <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+            <div style={{ display: "flex", gap: "10px", marginTop: "40px" }}>
               <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 style={{ border: "1px solid white", padding: "3px", borderRadius: "25%", cursor: "pointer"}}
                 >

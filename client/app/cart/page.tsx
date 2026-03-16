@@ -100,8 +100,6 @@ export default function CartPage() {
 
     window.dispatchEvent(new Event("cartUpdated"));
 
-    // alert("Order placed successfully!");
-
   } catch (error) {
     console.error("Checkout error:", error);
   }
