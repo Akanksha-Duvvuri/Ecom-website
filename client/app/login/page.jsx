@@ -30,11 +30,33 @@ export default function LoginPage() {
 
   return (
     <div style={{
-      minHeight: "100vh", display: "flex", alignItems: "center",
-      justifyContent: "center", background: "#0f0f0f",
+      minHeight: "100vh", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      background: "#0f0f0f",
     }}>
+
+      <h1 style={{
+        fontSize: 50, fontWeight: 700, color: "#fff",
+        marginBottom: "1.5rem", letterSpacing: "-0.01em",
+      }}>
+        TurNext <span style={{ color: "#666" }}>{">_"}</span>
+        <span style={{
+          display: "inline-block", width: 2, height: 40, margin: 20,
+          background: "#fff", marginLeft: 3, verticalAlign: "middle",
+          animation: "blink 1.2s ease-in-out infinite",
+        }} />
+      </h1>
+
+      <style>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          20% { opacity: 0; }
+        }
+      `}</style>
+
+      {/* Card */}
       <div style={{
-        width: "100%", maxWidth: 380, background: "#1a1a1a",
+        width: "100%", maxWidth: 450, background: "#1a1a1a",
         border: "1px solid #2a2a2a", borderRadius: 16, padding: "2rem 1.75rem",
       }}>
         <h1 style={{ fontSize: 22, fontWeight: 600, color: "#fff", marginBottom: 4 }}>
@@ -44,7 +66,6 @@ export default function LoginPage() {
           {tab === "login" ? "Sign in to your account to continue" : "Get started for free"}
         </p>
 
-        {/* Tabs */}
         <div style={{
           display: "flex", gap: 4, background: "#111",
           borderRadius: 10, padding: 4, marginBottom: "1.5rem",
@@ -62,7 +83,6 @@ export default function LoginPage() {
           ))}
         </div>
 
-        {/* Fields */}
         {[
           { label: "Email", type: "email", value: email, set: setEmail, placeholder: "name@example.com" },
           { label: "Password", type: "password", value: password, set: setPassword, placeholder: "••••••••" },
