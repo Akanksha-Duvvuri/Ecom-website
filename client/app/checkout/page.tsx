@@ -89,14 +89,14 @@ export default function CheckoutPage() {
           <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>Shipping info</p>
           <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "1.5rem", marginBottom: "1.25rem" }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              <Field label="First name" placeholder="Alex" value={form.firstName} onChange={set("firstName")} />
-              <Field label="Last name" placeholder="Jordan" value={form.lastName} onChange={set("lastName")} />
+              <Field label="First name" placeholder="" value={form.firstName} onChange={set("firstName")} />
+              <Field label="Last name" placeholder="" value={form.lastName} onChange={set("lastName")} />
             </div>
-            <Field label="Email" type="email" placeholder="you@example.com" value={form.email} onChange={set("email")} />
-            <Field label="Address" placeholder="123 Main St" value={form.address} onChange={set("address")} />
+            <Field label="Email" type="email" placeholder="name@example.com" value={form.email} onChange={set("email")} />
+            <Field label="Address" placeholder="" value={form.address} onChange={set("address")} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              <Field label="City" placeholder="New York" value={form.city} onChange={set("city")} />
-              <Field label="ZIP" placeholder="10001" value={form.zip} onChange={set("zip")} />
+              <Field label="City" placeholder=" " value={form.city} onChange={set("city")} />
+              <Field label="ZIP" placeholder="" value={form.zip} onChange={set("zip")} />
             </div>
           </div>
 
@@ -120,7 +120,6 @@ export default function CheckoutPage() {
           >
             {loading ? "Processing..." : `Place order — $${total.toFixed(2)}`}
           </button>
-          <p style={{ fontSize: 11, color: "#444", textAlign: "center", marginTop: 8 }}>Secured by Stripe · SSL encrypted</p>
         </div>
 
         {/* Order summary */}

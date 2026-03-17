@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import { useRouter } from "next/navigation";
 
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 type CartItem = {
@@ -17,7 +17,7 @@ type CartItem = {
   stock: number;
 };
 
-import { doc, updateDoc, increment } from "firebase/firestore";
+
 
 export default function CartPage() {
   const router = useRouter();
@@ -71,42 +71,6 @@ export default function CartPage() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
-
-  const checkout = async () => {
-  const stored = localStorage.getItem("cart");
-  if (!stored) return;
-
-  const cartItems = JSON.parse(stored);
-
-  const total = cartItems.reduce(
-    (sum: number, item: any) => sum + item.price * item.quantity,
-    0
-  );
-
-  try {
-    await addDoc(collection(db, "orders"), {
-      items: cartItems,
-      total,
-      createdAt: serverTimestamp(),
-    });
-
-    for (const item of cartItems) {
-      const productRef = doc(db, "products", item.id);
-
-      await updateDoc(productRef, {
-        stock: increment(-item.quantity),
-      });
-    }
-
-
-    localStorage.removeItem("cart");
-
-    window.dispatchEvent(new Event("cartUpdated"));
-
-  } catch (error) {
-    console.error("Checkout error:", error);
-  }
-};
 
   return (
     <main style={{ padding: "60px 40px" }}>
@@ -229,8 +193,8 @@ export default function CartPage() {
                 cursor: "pointer", fontWeight: 600,
                 fontSize: 14, fontFamily: "inherit",
               }}
-              onMouseEnter={e => e.target.style.background = "#e8e8e8"}
-              onMouseLeave={e => e.target.style.background = "#fff"}
+              onMouseEnter={e => (e.target as HTMLButtonElement).style.background = "#e8e8e8"}
+onMouseLeave={e => (e.target as HTMLButtonElement).style.background = "#fff"}
             >
               Proceed to Checkout
             </button>
