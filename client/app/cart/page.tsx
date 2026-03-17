@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
+import { useRouter } from "next/navigation";
+
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -18,6 +20,7 @@ type CartItem = {
 import { doc, updateDoc, increment } from "firebase/firestore";
 
 export default function CartPage() {
+  const router = useRouter();
   const [cart, setCart] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -218,17 +221,19 @@ export default function CartPage() {
             </p>
 
             <button
-                onClick={checkout}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  border: "2px solid black",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Checkout
-          </button>
+              onClick={() => router.push("/checkout")}
+              style={{
+                width: "100%", padding: "12px",
+                background: "#fff", color: "#000",
+                border: "none", borderRadius: "8px",
+                cursor: "pointer", fontWeight: 600,
+                fontSize: 14, fontFamily: "inherit",
+              }}
+              onMouseEnter={e => e.target.style.background = "#e8e8e8"}
+              onMouseLeave={e => e.target.style.background = "#fff"}
+            >
+              Proceed to Checkout
+            </button>
           </div>
         )}
       </div>
