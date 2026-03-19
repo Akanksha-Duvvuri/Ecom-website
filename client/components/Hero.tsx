@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section
@@ -25,6 +27,10 @@ export default function Hero() {
       >
         “Style is a way to say who you are without having to speak.”
       </p>
+
+      <Link href="/shop" style={{ fontSize: 20, color: "#fff", textDecoration: "none", border: "1px solid grey", padding: "12px", borderRadius: "10px"}}>
+          Shop Now
+      </Link>
     </section>
   );
 }

@@ -64,7 +64,7 @@ function ShopContent() {
     <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1.5rem", color: "#fff" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
-        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: "0.25rem" }}>Shop</h1>
+        <h1 style={{ fontSize: 50, fontWeight: 700, marginBottom: "0.25rem" }}>Shop</h1>
         <p style={{ fontSize: 13, color: "#555", marginBottom: "2rem" }}>
           {filtered.length} {filtered.length === 1 ? "product" : "products"}
         </p>

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type CartItem = {
   id: string;
@@ -43,6 +44,7 @@ const handleSubmit = async () => {
 };
 
   return (
+<ProtectedRoute>
     <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1rem", color: "#fff" }}>
       <p style={{ fontSize: 15, fontWeight: 700, marginBottom: "2rem" }}>
         TurNext <span style={{ color: "#555" }}>›_</span>
@@ -127,6 +129,7 @@ const handleSubmit = async () => {
         </div>
       </div>
     </div>
+  </ProtectedRoute>
   );
 }
 

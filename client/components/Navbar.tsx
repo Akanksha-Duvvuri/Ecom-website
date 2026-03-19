@@ -99,9 +99,8 @@ export default function Navbar() {
           />
           <button onClick={handleSearch} style={{
             padding: "8px 14px", borderRadius: "6px",
-            border: "none", backgroundColor: "#1a1a1a",
+            border: "1px solid #2a2a2a", backgroundColor: "#1a1a1a",
             color: "#fff", cursor: "pointer",
-            // border: "1px solid #2a2a2a",
           }}>
             <Search size={16} />
         </button>
@@ -135,10 +134,6 @@ export default function Navbar() {
         </Link>
 
         <SlidersHorizontal size={22} style={{ cursor: "pointer" }} />
-
-        <Link href="/shop" style={{ fontSize: 14, color: "#fff", textDecoration: "none" }}>
-          Shop
-        </Link>
       </div>
     </nav>
   );
