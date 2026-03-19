@@ -7,7 +7,7 @@ export default function Hero() {
         // padding: "100px 40px",
         textAlign: "center",
         background: "linear-gradient(to bottom, #000000ff, #16092f)",
-        height: "95vh",
+        height: "92vh",
       }}
     >
       <h1 style={{ fontSize: "60px", marginBottom: "20px", padding: "130px", }}>
