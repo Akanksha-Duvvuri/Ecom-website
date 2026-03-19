@@ -107,9 +107,24 @@ export default function ProfilePage() {
 
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2rem" }}>
-          <p style={{ fontSize: 15, fontWeight: 700 }}>
-            TurNext <span style={{ color: "#555" }}>›_</span>
-          </p>
+            <h3 style={{
+                fontSize: 30, fontWeight: 700, color: "grey",
+                marginBottom: "1.5rem", letterSpacing: "-0.01em",
+              }}>
+                TurNext <span style={{ color: "#666" }}>{">_"}</span>
+                <span style={{
+                  display: "inline-block", width: 2, height: 25, margin: 20,
+                  background: "#fff", marginLeft: 3, verticalAlign: "middle",
+                  animation: "blink 1.2s ease-in-out infinite",
+                }} />
+              </h3>
+
+               <style>{`
+                    @keyframes blink {
+                      0%, 100% { opacity: 1; }
+                      20% { opacity: 0; }
+                    }
+                  `}</style>
           <button onClick={handleSignOut} style={{
             padding: "7px 14px", background: "transparent", color: "#555",
             border: "1px solid #2a2a2a", borderRadius: 8, cursor: "pointer",

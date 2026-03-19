@@ -67,7 +67,7 @@ export default function Navbar() {
     <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
       <h2 style={{ margin: 0, fontWeight: 600 }}>TurNext</h2>
     </Link>
-  </div>
+    </div>
 
       {/* Center */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

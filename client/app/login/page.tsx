@@ -8,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,38 +17,31 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
- const handleSubmit = async () => {
-  setError("");
-  try {
-    if (tab === "login") {
-      await signInWithEmailAndPassword(auth, email, password);
-    } else {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Auto-generate a username from email
-      const autoName = "User_" + Math.random().toString(36).substring(2, 7).toUpperCase();
-
-      // Save to Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        name: autoName,
-        phone: "",
-        address: {
-          street: "",
-          city: "",
-          zip: "",
-          country: "",
-        },
-        createdAt: new Date(),
-      });
+// Change router.push("/dashboard") to router.push("/profile") in handleSubmit:
+const handleSubmit = async () => {
+    setError("");
+    try {
+      if (tab === "login") {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const autoName = "User_" + Math.random().toString(36).substring(2, 7).toUpperCase();
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email: user.email,
+          name: autoName,
+          phone: "",
+          address: { street: "", city: "", zip: "", country: "" },
+          createdAt: new Date(),
+        });
+      }
+      router.push("/profile"); // ← changed from /dashboard
+    } catch (err: any) {
+      setError(err.message);
     }
-    router.push("/dashboard");
-  } catch (err: any) {
-    setError(err.message);
-  }
-};
+  };
+
   return (
     <div style={{
       minHeight: "100vh", display: "flex", flexDirection: "column",
@@ -140,26 +134,27 @@ export default function LoginPage() {
         )}
 
         <button onClick={handleSubmit} style={{
-          width: "100%", padding: 11, background: "#fff", color: "#000",
-          border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600,
-          cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s",
-        }}
-          onMouseEnter={e => e.target.style.background = "#e8e8e8"}
-          onMouseLeave={e => e.target.style.background = "#fff"}
-          onMouseDown={e => e.target.style.transform = "scale(0.98)"}
-          onMouseUp={e => e.target.style.transform = "scale(1)"}>
-          {tab === "login" ? "Sign in" : "Create account"}
-        </button>
+                width: "100%", padding: 11, background: "#fff", color: "#000",
+                border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600,
+                cursor: "pointer", fontFamily: "inherit", transition: "background 0.15s",
+              }}
+                onMouseEnter={e => e.target.style.background = "#e8e8e8"}
+                onMouseLeave={e => e.target.style.background = "#fff"}
+                onMouseDown={e => e.target.style.transform = "scale(0.98)"}
+                onMouseUp={e => e.target.style.transform = "scale(1)"}>
+                {tab === "login" ? "Sign in" : "Create account"}
+          </button>
 
-        <p style={{ fontSize: 13, color: "#555", textAlign: "center", marginTop: "1.25rem" }}>
-          {tab === "login" ? "Don't have an account? " : "Already have an account? "}
-          <span onClick={() => setTab(tab === "login" ? "signup" : "login")}
-            style={{ color: "#aaa", cursor: "pointer" }}
-            onMouseEnter={e => e.target.style.color = "#fff"}
-            onMouseLeave={e => e.target.style.color = "#aaa"}>
-            {tab === "login" ? "Sign up" : "Sign in"}
-          </span>
-        </p>
+              <p style={{ fontSize: 13, color: "#555", textAlign: "center", marginTop: "1.25rem" }}>
+                {tab === "login" ? "Don't have an account? " : "Already have an account? "}
+                <span onClick={() => setTab(tab === "login" ? "signup" : "login")}
+                  style={{ color: "#aaa", cursor: "pointer" }}
+                  onMouseEnter={e => e.target.style.color = "#fff"}
+                  onMouseLeave={e => e.target.style.color = "#aaa"}>
+                  {tab === "login" ? "Sign up" : "Sign in"}
+                </span>
+              </p>
+              
       </div>
     </div>
   );
