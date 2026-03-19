@@ -77,7 +77,7 @@ export default function CartPage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "2rem", alignItems: "flex-start" }}>
 
             {/* Left — cart items */}
-            <div>
+            <div style={{border: "1px solid grey", padding: "5px 15px", borderRadius: "10px"}} >
               {cart.map((item, i) => (
                 <div key={item.id} style={{
                   display: "flex", gap: 16, padding: "20px 0",
