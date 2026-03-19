@@ -16,6 +16,7 @@ type UserProfile = {
     zip: string;
     country: string;
   };
+  wishlist?: string[]; 
 };
 
 type Order = {
@@ -34,7 +35,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", street: "", city: "", zip: "", country: "" });
-  const [tab, setTab] = useState<"profile" | "orders">("profile");
+  const [tab, setTab] = useState<"profile" | "orders" | "wishlist">("profile");
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
 
 useEffect(() => {
