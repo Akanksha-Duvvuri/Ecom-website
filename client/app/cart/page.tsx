@@ -95,6 +95,7 @@ export default function CartPage() {
                   {/* Info */}
                   <div style={{ flex: 1 }}>
                     <p style={{ fontSize: 15, fontWeight: 500, marginBottom: 4 }}>{item.name}</p>
+                    {item.size && <p style={{ fontSize: 12, color: "#555", marginTop: 2 }}>Size: {item.size}</p>}
                     <p style={{ fontSize: 13, color: "#555", marginBottom: 12 }}>${item.price.toFixed(2)} each</p>
 
                     {/* Quantity controls */}

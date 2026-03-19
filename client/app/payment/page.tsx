@@ -25,7 +25,10 @@ type CartItem = {
 export default function PaymentPage() {
   const [clientSecret, setClientSecret] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const gst = subtotal * 0.18;
+  const total = subtotal + gst;
 
   useEffect(() => {
     const stored = localStorage.getItem("cart");
@@ -104,11 +107,11 @@ export default function PaymentPage() {
               </div>
             ))}
             <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
-            {[["Subtotal", `$${total.toFixed(2)}`], ["Shipping", "Free"], ["Tax", "$0.00"]].map(([k, v]) => (
-              <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#888", marginBottom: 8 }}>
-                <span>{k}</span><span>{v}</span>
-              </div>
-            ))}
+            {[["Subtotal", `$${subtotal.toFixed(2)}`], ["GST (18%)", `$${gst.toFixed(2)}`], ["Shipping", "Free"]].map(([k, v]) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#888", marginBottom: 8 }}>
+                  <span>{k}</span><span>{v}</span>
+                </div>
+              ))}
             <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 600, color: "#fff" }}>
               <span>Total</span><span>${total.toFixed(2)}</span>
