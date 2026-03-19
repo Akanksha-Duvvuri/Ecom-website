@@ -10,6 +10,7 @@ type CartItem = {
   img: string;
   quantity: number;
   stock: number;
+  size?: string;
 };
 
 export default function CartPage() {
