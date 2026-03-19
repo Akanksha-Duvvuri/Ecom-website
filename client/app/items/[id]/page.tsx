@@ -5,6 +5,8 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { auth } from "@/lib/firebase";
 
 type Item = {
   id: string;
@@ -13,6 +15,15 @@ type Item = {
   stock: number;
   img: string;
   category?: string;
+};
+
+type Review = {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: any;
 };
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -27,16 +38,31 @@ export default function ProductPage() {
   const [added, setAdded] = useState(false);
   const [sizeError, setSizeError] = useState(false);
 
-  useEffect(() => {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+
+ useEffect(() => {
     if (!id) return;
-    const fetchProduct = async () => {
+    const fetchAll = async () => {
+      // Fetch product
       const ref = doc(db, "products", id);
       const snap = await getDoc(ref);
       if (snap.exists()) {
         setProduct({ id: snap.id, ...(snap.data() as Omit<Item, "id">) });
       }
+
+      // Fetch reviews
+      const reviewsRef = collection(db, "products", id, "reviews");
+      const q = query(reviewsRef, orderBy("createdAt", "desc"));
+      const reviewSnap = await getDocs(q);
+      setReviews(reviewSnap.docs.map(d => ({ id: d.id, ...d.data() } as Review)));
     };
-    fetchProduct();
+    fetchAll(); 
   }, [id]);
 
   function addToCart() {
@@ -72,6 +98,37 @@ export default function ProductPage() {
       <p style={{ color: "#555" }}>Loading...</p>
     </div>
   );
+
+  const submitReview = async () => {
+  const user = auth.currentUser;
+  if (!user) { setReviewError("Sign in to leave a review."); return; }
+  if (rating === 0) { setReviewError("Please select a star rating."); return; }
+  if (!comment.trim()) { setReviewError("Please write a comment."); return; }
+
+  setSubmitting(true);
+  setReviewError("");
+
+  const reviewsRef = collection(db, "products", id, "reviews");
+  const ref = await addDoc(reviewsRef, {
+    userId: user.uid,
+    userName: user.displayName || "Anonymous",
+    rating,
+    comment: comment.trim(),
+    createdAt: serverTimestamp(),
+  });
+
+  setReviews(prev => [{
+    id: ref.id, userId: user.uid,
+    userName: user.displayName || "Anonymous",
+    rating, comment: comment.trim(), createdAt: new Date(),
+  }, ...prev]);
+
+  setRating(0);
+  setComment("");
+  setSubmitting(false);
+  setSubmitted(true);
+  setTimeout(() => setSubmitted(false), 3000);
+};
 
   return (
     <>
@@ -196,6 +253,107 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+        {/* Reviews section */}
+            <div style={{ marginTop: "3rem", borderTop: "1px solid #2a2a2a", paddingTop: "2rem" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginBottom: "1.5rem" }}>
+                <h2 style={{ fontSize: 20, fontWeight: 600 }}>Reviews</h2>
+                {reviews.length > 0 && (
+                  <p style={{ fontSize: 13, color: "#555" }}>
+                    {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)} avg · {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
+                  </p>
+                )}
+              </div>
+
+              {/* Write a review */}
+              <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "1.5rem", marginBottom: "1.5rem" }}>
+                <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>Write a review</p>
+
+                {/* Star selector */}
+                <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <span
+                      key={star}
+                      onClick={() => setRating(star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      style={{
+                        fontSize: 28, cursor: "pointer",
+                        color: star <= (hoverRating || rating) ? "#facc15" : "#2a2a2a",
+                        transition: "color 0.1s",
+                      }}
+                    >★</span>
+                  ))}
+                </div>
+
+                <textarea
+                  value={comment}
+                  onChange={e => setComment(e.target.value)}
+                  placeholder="Share your thoughts on this product..."
+                  rows={3}
+                  style={{
+                    width: "100%", padding: "10px 12px",
+                    background: "#111", border: "1px solid #2a2a2a",
+                    borderRadius: 10, color: "#fff", fontSize: 14,
+                    outline: "none", fontFamily: "inherit", resize: "vertical",
+                    marginBottom: 12,
+                  }}
+                  onFocus={e => e.target.style.borderColor = "#555"}
+                  onBlur={e => e.target.style.borderColor = "#2a2a2a"}
+                />
+
+                {reviewError && (
+                  <p style={{ fontSize: 13, color: "#f87171", marginBottom: 10 }}>{reviewError}</p>
+                )}
+
+                <button onClick={submitReview} disabled={submitting} style={{
+                  padding: "10px 24px",
+                  background: submitted ? "#0f2a0f" : submitting ? "#333" : "#fff",
+                  color: submitted ? "#4ade80" : submitting ? "#888" : "#000",
+                  border: submitted ? "1px solid #1a4a1a" : "none",
+                  borderRadius: 10, fontSize: 13, fontWeight: 600,
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  fontFamily: "inherit", transition: "all 0.2s",
+                }}>
+                  {submitted ? "Review submitted!" : submitting ? "Submitting..." : "Submit review"}
+                </button>
+              </div>
+
+              {/* Reviews list */}
+              {reviews.length === 0 ? (
+                <p style={{ color: "#555", fontSize: 14 }}>No reviews yet — be the first!</p>
+              ) : (
+                reviews.map(review => (
+                  <div key={review.id} style={{
+                    background: "#1a1a1a", border: "1px solid #2a2a2a",
+                    borderRadius: 14, padding: "1.25rem", marginBottom: 10,
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                          <div style={{
+                            width: 32, height: 32, borderRadius: "50%",
+                            background: "#2a2a2a", display: "flex", alignItems: "center",
+                            justifyContent: "center", fontSize: 13, fontWeight: 600,
+                          }}>
+                            {review.userName?.[0]?.toUpperCase()}
+                          </div>
+                          <p style={{ fontSize: 13, fontWeight: 500 }}>{review.userName}</p>
+                        </div>
+                        <div style={{ display: "flex", gap: 2 }}>
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <span key={star} style={{ fontSize: 14, color: star <= review.rating ? "#facc15" : "#2a2a2a" }}>★</span>
+                          ))}
+                        </div>
+                      </div>
+                      <p style={{ fontSize: 11, color: "#555" }}>
+                        {review.createdAt?.toDate?.()?.toLocaleDateString() || "Recently"}
+                      </p>
+                    </div>
+                    <p style={{ fontSize: 13, color: "#aaa", lineHeight: 1.6, marginTop: 8 }}>{review.comment}</p>
+                  </div>
+                ))
+              )}
+            </div>
       </div>
       <Footer />
     </>
