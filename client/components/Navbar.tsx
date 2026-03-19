@@ -9,10 +9,23 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const [count, setCount] = useState(0);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+
+  const handleSearch = () => {
+      if (searchQuery.trim()) {
+        router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
+      } else {
+        router.push("/shop");
+      }
+  };
 
   useEffect(() => {
   const updateCount = () => {
@@ -72,27 +85,25 @@ export default function Navbar() {
       {/* Center */}
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <input
-          type="text"
-          placeholder="Search products..."
-          style={{
-            padding: "8px 12px",
-            width: "300px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            outline: "none",
-          }}
-        />
-        <button
-          style={{
-            padding: "8px 14px",
-            borderRadius: "6px",
-            border: "none",
-            backgroundColor: "black",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          <Search size={16} />
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSearch()}
+            style={{
+              padding: "8px 12px", width: "300px",
+              borderRadius: "6px", border: "1px solid #2a2a2a",
+              outline: "none", background: "#1a1a1a",
+              color: "#fff", fontFamily: "inherit", fontSize: 14,
+            }}
+          />
+          <button onClick={handleSearch} style={{
+            padding: "8px 14px", borderRadius: "6px",
+            border: "none", backgroundColor: "#1a1a1a",
+            color: "#fff", cursor: "pointer",
+            // border: "1px solid #2a2a2a",
+          }}>
+            <Search size={16} />
         </button>
       </div>
 
@@ -124,6 +135,10 @@ export default function Navbar() {
         </Link>
 
         <SlidersHorizontal size={22} style={{ cursor: "pointer" }} />
+
+        <Link href="/shop" style={{ fontSize: 14, color: "#fff", textDecoration: "none" }}>
+          Shop
+        </Link>
       </div>
     </nav>
   );
