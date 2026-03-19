@@ -10,6 +10,7 @@ import {
   GoogleAuthProvider
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,6 +44,20 @@ export default function LoginPage() {
       setError(err.message);
     }
   };
+
+  const handleForgotPassword = async () => {
+  if (!email) {
+    setError("Enter your email above first, then click Forgot password.");
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    setError(""); 
+    alert("Password reset email sent! Check your inbox.");
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
 
   const handleSubmit = async () => {
     setError("");
@@ -186,13 +201,16 @@ export default function LoginPage() {
         ))}
 
         {tab === "login" && (
-          <p style={{ fontSize: 12, color: "#555", textAlign: "right", marginBottom: "1.25rem", cursor: "pointer" }}
+          <p
+            onClick={handleForgotPassword}
+            style={{ fontSize: 12, color: "#555", textAlign: "right", marginBottom: "1.25rem", cursor: "pointer" }}
             onMouseEnter={e => (e.target as HTMLElement).style.color = "#aaa"}
-            onMouseLeave={e => (e.target as HTMLElement).style.color = "#555"}>
+            onMouseLeave={e => (e.target as HTMLElement).style.color = "#555"}
+          >
             Forgot password?
           </p>
         )}
-
+        
         {error && (
           <p style={{ fontSize: 13, color: "#f87171", background: "#1f0a0a", border: "1px solid #3d1515", borderRadius: 8, padding: "8px 12px", marginBottom: 12 }}>
             {error}

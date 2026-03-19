@@ -12,12 +12,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+
 export default function Navbar() {
   const [count, setCount] = useState(0);
 
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleSearch = () => {
       if (searchQuery.trim()) {
@@ -48,6 +53,20 @@ export default function Navbar() {
     } catch {
       setCount(0);
     }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const snap = await getDoc(doc(db, "users", user.uid));
+          if (snap.exists() && snap.data().isAdmin) setIsAdmin(true);
+        }
+      });
+
+      // Add in the right side of navbar:
+      {isAdmin && (
+        <Link href="/admin" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>
+          Admin
+        </Link>
+      )}
   };
 
   updateCount();
