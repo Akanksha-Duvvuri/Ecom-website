@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, updateDoc, collection, query, where, orderBy, getDocs } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, query, where, orderBy, getDocs, arrayRemove } from "firebase/firestore";
 
 type UserProfile = {
   uid: string;
@@ -35,37 +35,49 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", street: "", city: "", zip: "", country: "" });
   const [tab, setTab] = useState<"profile" | "orders">("profile");
+  const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) { router.push("/login"); return; }
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, async (user) => {
+    if (!user) { router.push("/login"); return; }
 
-      // Load profile
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) {
-        const data = snap.data() as UserProfile;
-        setProfile(data);
-        setForm({
-          name: data.name || "",
-          phone: data.phone || "",
-          street: data.address?.street || "",
-          city: data.address?.city || "",
-          zip: data.address?.zip || "",
-          country: data.address?.country || "",
-        });
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) {
+      const data = snap.data() as UserProfile;
+      setProfile(data);
+      setForm({
+        name: data.name || "",
+        phone: data.phone || "",
+        street: data.address?.street || "",
+        city: data.address?.city || "",
+        zip: data.address?.zip || "",
+        country: data.address?.country || "",
+      });
+
+      // Load wishlist products
+      const wishlistIds: string[] = data.wishlist || [];
+      if (wishlistIds.length > 0) {
+        const productSnaps = await Promise.all(
+          wishlistIds.map(id => getDoc(doc(db, "products", id)))
+        );
+        setWishlistProducts(
+          productSnaps.filter(s => s.exists()).map(s => ({ id: s.id, ...s.data() }))
+        );
       }
+    }
 
-      // Load orders
-      const q = query(
-        collection(db, "orders"),
-        where("shipping.email", "==", user.email),
-        orderBy("createdAt", "desc")
-      );
-      const orderSnap = await getDocs(q);
-      setOrders(orderSnap.docs.map(d => ({ id: d.id, ...d.data() } as Order)));
-    });
-    return () => unsub();
-  }, []);
+    // Load orders
+    const q = query(
+      collection(db, "orders"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
+    const orderSnap = await getDocs(q);
+    setOrders(orderSnap.docs.map(d => ({ id: d.id, ...d.data() } as Order)));
+  });
+  return () => unsub();
+}, []);
+
 
   const handleSave = async () => {
     if (!profile) return;
@@ -158,7 +170,7 @@ export default function ProfilePage() {
           display: "flex", gap: 4, background: "#111",
           borderRadius: 10, padding: 4, marginBottom: "1.5rem",
         }}>
-          {(["profile", "orders"] as const).map(t => (
+          {(["profile", "orders", "wishlist"] as const).map(t => (
             <div key={t} onClick={() => setTab(t)} style={{
               flex: 1, padding: "7px", fontSize: 13, fontWeight: 500,
               textAlign: "center", borderRadius: 7, cursor: "pointer",
@@ -166,7 +178,7 @@ export default function ProfilePage() {
               color: tab === t ? "#fff" : "#555",
               transition: "all 0.15s", userSelect: "none",
             }}>
-              {t === "profile" ? "Profile" : "Orders"}
+              {t === "profile" ? "Profile" : t === "orders" ? "Orders" : "Wishlist"}
             </div>
           ))}
         </div>
@@ -308,6 +320,76 @@ export default function ProfilePage() {
             )}
           </div>
         )}
+
+        {tab === "wishlist" && (
+              <div>
+                {wishlistProducts.length === 0 ? (
+                  <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "2rem", textAlign: "center" }}>
+                    <p style={{ color: "#555", fontSize: 14 }}>No wishlisted items yet.</p>
+                    <button onClick={() => router.push("/shop")} style={{
+                      marginTop: 12, padding: "9px 20px", background: "#fff", color: "#000",
+                      border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13,
+                      fontWeight: 600, fontFamily: "inherit",
+                    }}>Browse shop</button>
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+                    {wishlistProducts.map(product => (
+                      <div key={product.id} style={{
+                        background: "#1a1a1a", border: "1px solid #2a2a2a",
+                        borderRadius: 12, overflow: "hidden",
+                        transition: "border-color 0.15s",
+                      }}
+                        onMouseEnter={e => (e.currentTarget.style.borderColor = "#3a3a3a")}
+                        onMouseLeave={e => (e.currentTarget.style.borderColor = "#2a2a2a")}
+                      >
+                        {/* Image — clicks to product */}
+                        <div
+                          onClick={() => router.push(`/items/${product.id}`)}
+                          style={{ position: "relative", width: "100%", paddingBottom: "100%", background: "#2a2a2a", cursor: "pointer" }}
+                        >
+                          {product.img && (
+                            <img src={product.img} alt={product.name}
+                              style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover" }} />
+                          )}
+                        </div>
+
+                        {/* Info */}
+                        <div style={{ padding: "10px 12px" }}>
+                          <p
+                            onClick={() => router.push(`/products/${product.id}`)}
+                            style={{ fontSize: 13, fontWeight: 500, cursor: "pointer", marginBottom: 2 }}
+                          >
+                            {product.name}
+                          </p>
+                          <p style={{ fontSize: 13, color: "#555", marginBottom: 10 }}>${product.price}</p>
+                          <button
+                            onClick={async () => {
+                              if (!profile) return;
+                              const { arrayRemove } = await import("firebase/firestore");
+                              await updateDoc(doc(db, "users", profile.uid), {
+                                wishlist: arrayRemove(product.id),
+                              });
+                              setWishlistProducts(prev => prev.filter(p => p.id !== product.id));
+                            }}
+                            style={{
+                              width: "100%", padding: "5px", background: "transparent",
+                              color: "#555", border: "1px solid #2a2a2a",
+                              borderRadius: 6, cursor: "pointer", fontSize: 11,
+                              fontFamily: "inherit", transition: "all 0.15s",
+                            }}
+                            onMouseEnter={e => { (e.currentTarget.style.color = "#f87171"); (e.currentTarget.style.borderColor = "#3d1515"); }}
+                            onMouseLeave={e => { (e.currentTarget.style.color = "#555"); (e.currentTarget.style.borderColor = "#2a2a2a"); }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
       </div>
     </div>
   );

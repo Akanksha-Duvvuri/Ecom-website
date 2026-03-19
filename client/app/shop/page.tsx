@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import Image from "next/image";
+import { useWishlist } from "../hooks/useWishlist";
 
 type Product = {
   id: string;
@@ -23,6 +24,7 @@ function ShopContent() {
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState("default");
   const [loading, setLoading] = useState(true);
+  const { wishlist, toggle } = useWishlist();
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -130,7 +132,7 @@ function ShopContent() {
             {filtered.map(product => (
               <div
                 key={product.id}
-                onClick={() => router.push(`/products/${product.id}`)}
+                onClick={() => router.push(`/items/${product.id}`)}
                 style={{
                   background: "#1a1a1a", border: "1px solid #2a2a2a",
                   borderRadius: 14, overflow: "hidden",
@@ -152,6 +154,22 @@ function ShopContent() {
                       border: "1px solid #2a2a2a",
                     }}>Out of stock</div>
                   )}
+
+                  <button
+                      onClick={e => { e.stopPropagation(); toggle(product.id); }}
+                      style={{
+                        position: "absolute", top: 10, right: 10,
+                        width: 34, height: 34, borderRadius: "50%",
+                        background: "rgba(0,0,0,0.6)", border: "none",
+                        cursor: "pointer", display: "flex", alignItems: "center",
+                        justifyContent: "center", fontSize: 16, zIndex: 1,
+                        transition: "transform 0.15s",
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.15)")}
+                      onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+                      >
+                      {wishlist.includes(product.id) ? " ★" : "☆"}
+                      </button>
                 </div>
 
                 {/* Info */}
