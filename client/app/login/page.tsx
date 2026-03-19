@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { auth } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -14,20 +16,38 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async () => {
-    setError("");
-    try {
-      if (tab === "login") {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
-      router.push("/dashboard");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+ const handleSubmit = async () => {
+  setError("");
+  try {
+    if (tab === "login") {
+      await signInWithEmailAndPassword(auth, email, password);
+    } else {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
+      // Auto-generate a username from email
+      const autoName = "User_" + Math.random().toString(36).substring(2, 7).toUpperCase();
+
+      // Save to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        name: autoName,
+        phone: "",
+        address: {
+          street: "",
+          city: "",
+          zip: "",
+          country: "",
+        },
+        createdAt: new Date(),
+      });
+    }
+    router.push("/dashboard");
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
   return (
     <div style={{
       minHeight: "100vh", display: "flex", flexDirection: "column",

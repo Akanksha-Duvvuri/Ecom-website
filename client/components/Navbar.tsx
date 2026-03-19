@@ -98,7 +98,9 @@ export default function Navbar() {
 
       {/* Right */}
       <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-        <User size={22} style={{ cursor: "pointer" }} />
+        <Link href="/profile">
+          <User size={22} style={{ cursor: "pointer" }} />
+        </Link>
 
         <Link href="/cart" style={{ position: "relative" }}>
           <ShoppingCart size={22} style={{ cursor: "pointer" }} />
