@@ -124,7 +124,7 @@ export default function ProfilePage() {
                       0%, 100% { opacity: 1; }
                       20% { opacity: 0; }
                     }
-                  `}</style>
+              `}</style>
           <button onClick={handleSignOut} style={{
             padding: "7px 14px", background: "transparent", color: "#555",
             border: "1px solid #2a2a2a", borderRadius: 8, cursor: "pointer",

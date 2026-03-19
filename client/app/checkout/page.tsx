@@ -20,8 +20,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "",
-    address: "", city: "", zip: "", country: "United States",
-    cardNumber: "", expiry: "", cvc: "", nameOnCard: "",
+    address: "", city: "", zip: "", country: "",
   });
 
   useEffect(() => {
@@ -34,37 +33,14 @@ export default function CheckoutPage() {
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [field]: e.target.value });
 
-  const handleSubmit = async () => {
-    if (!form.firstName || !form.email || !form.cardNumber) {
-      setError("Please fill in all required fields.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const orderRef = await addDoc(collection(db, "orders"), {
-        items: cart,
-        total,
-        shipping: form,
-        status: "paid",
-        createdAt: serverTimestamp(),
-      });
-
-      for (const item of cart) {
-        const productRef = doc(db, "products", item.id);
-        await updateDoc(productRef, { stock: increment(-item.quantity) });
-      }
-
-      localStorage.removeItem("cart");
-      window.dispatchEvent(new Event("cartUpdated"));
-
-      router.push("/order-confirmation?orderId=" + orderRef.id);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleSubmit = async () => {
+  if (!form.firstName || !form.email || !form.address) {
+    setError("Please fill in all required fields.");
+    return;
+  }
+  localStorage.setItem("shipping", JSON.stringify(form));
+  router.push("/payment");
+};
 
   return (
     <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1rem", color: "#fff" }}>
@@ -92,7 +68,7 @@ export default function CheckoutPage() {
               <Field label="First name" placeholder="" value={form.firstName} onChange={set("firstName")} />
               <Field label="Last name" placeholder="" value={form.lastName} onChange={set("lastName")} />
             </div>
-            <Field label="Email" type="email" placeholder="name@example.com" value={form.email} onChange={set("email")} />
+            <Field label="Email" type="email" placeholder="" value={form.email} onChange={set("email")} />
             <Field label="Address" placeholder="" value={form.address} onChange={set("address")} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <Field label="City" placeholder=" " value={form.city} onChange={set("city")} />
