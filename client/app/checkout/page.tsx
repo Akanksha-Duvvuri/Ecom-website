@@ -29,7 +29,9 @@ export default function CheckoutPage() {
     if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const gst = subtotal * 0.18;
+  const total = subtotal + gst;
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [field]: e.target.value });
@@ -116,7 +118,7 @@ const handleSubmit = async () => {
               </div>
             ))}
             <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
-            {[["Subtotal", `$${total.toFixed(2)}`], ["Shipping", "Free"], ["Tax", "$0.00"]].map(([k, v]) => (
+            {[["Subtotal", `$${subtotal.toFixed(2)}`], ["GST (18%)", `$${gst.toFixed(2)}`], ["Shipping", "Free"]].map(([k, v]) => (
               <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#888", marginBottom: 8 }}>
                 <span>{k}</span><span>{v}</span>
               </div>
