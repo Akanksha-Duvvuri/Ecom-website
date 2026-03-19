@@ -283,7 +283,7 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Tracking */}
-                  <div style={{ marginTop: 12, padding: "10px 12px", background: "#111", borderRadius: 8 }}>
+                  <div style={{ marginTop: 12, padding: "10px 12px", background: "#111", borderRadius: 8, height: "100px" }}>
                     <p style={{ fontSize: 12, color: "#555", marginBottom: 6 }}>Tracking</p>
                     <div style={{ display: "flex", gap: 0 }}>
                       {["Order placed", "Processing", "Shipped", "Delivered"].map((step, i) => {

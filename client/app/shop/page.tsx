@@ -5,7 +5,6 @@ import { db } from "@/lib/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 type Product = {
   id: string;
@@ -26,13 +25,18 @@ function ShopContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
+    const loadProducts = async () => {
       const snap = await getDocs(collection(db, "products"));
       setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() } as Product)));
       setLoading(false);
     };
-    fetch();
+    loadProducts();
   }, []);
+
+  // Sync search from navbar URL
+  useEffect(() => {
+    setSearch(searchParams.get("q") || "");
+  }, [searchParams]);
 
   const categories = ["all", ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))];
 
@@ -46,7 +50,8 @@ function ShopContent() {
       return 0;
     });
 
-  const addToCart = (product: Product) => {
+  const addToCart = (e: React.MouseEvent, product: Product) => {
+    e.stopPropagation(); // prevent navigating to product page
     const stored = localStorage.getItem("cart");
     const cart = stored ? JSON.parse(stored) : [];
     const existing = cart.find((i: any) => i.id === product.id);
@@ -85,7 +90,6 @@ function ShopContent() {
             onBlur={e => e.target.style.borderColor = "#2a2a2a"}
           />
 
-          {/* Category filter */}
           <select value={category} onChange={e => setCategory(e.target.value)} style={{
             padding: "10px 14px", background: "#1a1a1a", border: "1px solid #2a2a2a",
             borderRadius: 10, color: "#fff", fontSize: 14, outline: "none",
@@ -96,7 +100,6 @@ function ShopContent() {
             ))}
           </select>
 
-          {/* Sort */}
           <select value={sort} onChange={e => setSort(e.target.value)} style={{
             padding: "10px 14px", background: "#1a1a1a", border: "1px solid #2a2a2a",
             borderRadius: 10, color: "#fff", fontSize: 14, outline: "none",
@@ -125,20 +128,19 @@ function ShopContent() {
             gap: 16,
           }}>
             {filtered.map(product => (
-              <div key={product.id} style={{
-                background: "#1a1a1a", border: "1px solid #2a2a2a",
-                borderRadius: 14, overflow: "hidden",
-                transition: "border-color 0.15s",
-                cursor: "pointer",
-              }}
+              <div
+                key={product.id}
+                onClick={() => router.push(`/products/${product.id}`)}
+                style={{
+                  background: "#1a1a1a", border: "1px solid #2a2a2a",
+                  borderRadius: 14, overflow: "hidden",
+                  transition: "border-color 0.15s", cursor: "pointer",
+                }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = "#3a3a3a")}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = "#2a2a2a")}
               >
                 {/* Image */}
-                <div
-                  onClick={() => router.push(`/products/${product.id}`)}
-                  style={{ position: "relative", width: "100%", paddingBottom: "100%", background: "#2a2a2a" }}
-                >
+                <div style={{ position: "relative", width: "100%", paddingBottom: "100%", background: "#2a2a2a" }}>
                   {product.img && (
                     <Image src={product.img} alt={product.name} fill style={{ objectFit: "cover" }} />
                   )}
@@ -153,12 +155,8 @@ function ShopContent() {
                 </div>
 
                 {/* Info */}
-                <Link href="/items">
-                  <div style={{ padding: "12px 14px" }}>
-                  <p
-                    onClick={() => router.push(`/products/${product.id}`)}
-                    style={{ fontSize: 14, fontWeight: 500, marginBottom: 4, cursor: "pointer" }}
-                  >
+                <div style={{ padding: "12px 14px" }}>
+                  <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>
                     {product.name}
                   </p>
                   {product.category && (
@@ -167,10 +165,11 @@ function ShopContent() {
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <p style={{ fontSize: 15, fontWeight: 600 }}>${product.price}</p>
                     <button
-                      onClick={() => addToCart(product)}
+                      onClick={e => addToCart(e, product)}
                       disabled={product.stock === 0}
                       style={{
-                        padding: "6px 14px", background: product.stock === 0 ? "#2a2a2a" : "#fff",
+                        padding: "6px 14px",
+                        background: product.stock === 0 ? "#2a2a2a" : "#fff",
                         color: product.stock === 0 ? "#555" : "#000",
                         border: "none", borderRadius: 8, fontSize: 12,
                         fontWeight: 600, cursor: product.stock === 0 ? "not-allowed" : "pointer",
@@ -182,9 +181,7 @@ function ShopContent() {
                       Add to cart
                     </button>
                   </div>
-                    </div>
-                </Link>
-                
+                </div>
               </div>
             ))}
           </div>
