@@ -1,4 +1,5 @@
 "use client";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 
@@ -94,8 +95,10 @@ function OrderConfirmationContent() {
 
 export default function OrderConfirmationPage() {
   return (
+    <ProtectedRoute>
     <Suspense fallback={<div style={{ background: "#0f0f0f", minHeight: "100vh" }} />}>
       <OrderConfirmationContent />
     </Suspense>
+    </ProtectedRoute>
   );
 }

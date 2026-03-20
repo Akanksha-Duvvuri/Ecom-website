@@ -10,6 +10,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -50,6 +51,7 @@ export default function PaymentPage() {
   }, []);
 
   return (
+    <ProtectedRoute>
     <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1rem", color: "#fff" }}>
       <p style={{ fontSize: 15, fontWeight: 700, marginBottom: "2rem" }}>
         TurNext <span style={{ color: "#555" }}>›_</span>
@@ -120,6 +122,7 @@ export default function PaymentPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
 

@@ -7,6 +7,7 @@ import {
   collection, getDocs, doc, getDoc, updateDoc,
   addDoc, deleteDoc, serverTimestamp, orderBy, query
 } from "firebase/firestore";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type Order = {
   id: string;
@@ -131,6 +132,7 @@ export default function AdminPage() {
   const btn = (bg = "#fff", color = "#000") => ({ padding: "7px 14px", background: bg, color, border: bg === "transparent" ? "1px solid #2a2a2a" : "none", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 600, fontFamily: "inherit" });
 
   return (
+    <ProtectedRoute>
     <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1.5rem", color: "#fff" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
 
@@ -329,5 +331,6 @@ export default function AdminPage() {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

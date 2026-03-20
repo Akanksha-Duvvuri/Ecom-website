@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc, collection, query, where, orderBy, getDocs, arrayRemove } from "firebase/firestore";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type UserProfile = {
   uid: string;
@@ -115,6 +116,7 @@ useEffect(() => {
   );
 
   return (
+    <ProtectedRoute>
     <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1rem", color: "#fff" }}>
       <div style={{ maxWidth: 700, margin: "0 auto" }}>
 
@@ -393,6 +395,7 @@ useEffect(() => {
             )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
 

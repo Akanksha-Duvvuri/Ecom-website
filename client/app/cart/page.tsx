@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 type CartItem = {
   id: string;
@@ -55,6 +56,7 @@ export default function CartPage() {
   const total = subtotal + gst;
 
   return (
+    <ProtectedRoute>
     <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1.5rem", color: "#fff" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
 
@@ -205,5 +207,6 @@ export default function CartPage() {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
