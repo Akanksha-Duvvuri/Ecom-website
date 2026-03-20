@@ -23,27 +23,36 @@ export default function LoginPage() {
 
   const googleProvider = new GoogleAuthProvider();
 
-  const handleGoogle = async () => {
-    setError("");
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists()) {
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName || "User_" + Math.random().toString(36).substring(2, 7).toUpperCase(),
-          phone: "",
-          address: { street: "", city: "", zip: "", country: "" },
-          createdAt: new Date(),
-        });
-      }
-      router.push("/profile");
-    } catch (err: any) {
-      setError(err.message);
+ const handleGoogle = async () => {
+  setError("");
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) {
+      // New user — create profile with empty cart
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        name: user.displayName || "User_" + Math.random().toString(36).substring(2, 7).toUpperCase(),
+        phone: "",
+        address: { street: "", city: "", zip: "", country: "" },
+        cart: [],
+        createdAt: new Date(),
+      });
+      localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("cartUpdated"));
+    } else {
+      // Existing user — restore their cart
+      const firestoreCart = snap.data().cart || [];
+      localStorage.setItem("cart", JSON.stringify(firestoreCart));
+      window.dispatchEvent(new Event("cartUpdated"));
     }
-  };
+    router.push("/profile");
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
 
   const handleForgotPassword = async () => {
   if (!email) {
@@ -59,31 +68,40 @@ export default function LoginPage() {
   }
 };
 
-  const handleSubmit = async () => {
-    setError("");
-    try {
-      if (tab === "login") {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        const fullName = `${firstName} ${lastName}`.trim() ||
-          "User_" + Math.random().toString(36).substring(2, 7).toUpperCase();
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: user.email,
-          name: fullName,
-          phone: "",
-          address: { street: "", city: "", zip: "", country: "" },
-          createdAt: new Date(),
-        });
+const handleSubmit = async () => {
+  setError("");
+  try {
+    if (tab === "login") {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) {
+        const firestoreCart = snap.data().cart || [];
+        localStorage.setItem("cart", JSON.stringify(firestoreCart));
+        window.dispatchEvent(new Event("cartUpdated"));
       }
-      router.push("/profile");
-    } catch (err: any) {
-      setError(err.message);
+    } else {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const fullName = `${firstName} ${lastName}`.trim() ||
+        "User_" + Math.random().toString(36).substring(2, 7).toUpperCase();
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        name: fullName,
+        phone: "",
+        address: { street: "", city: "", zip: "", country: "" },
+        cart: [],
+        createdAt: new Date(),
+      });
+      localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("cartUpdated"));
     }
-  };
-
+    router.push("/profile");
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
   return (
     <div style={{
       minHeight: "100vh", display: "flex", flexDirection: "column",

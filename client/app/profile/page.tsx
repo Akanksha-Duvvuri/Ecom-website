@@ -101,10 +101,16 @@ useEffect(() => {
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push("/login");
-  };
+const handleSignOut = async () => {
+  if (profile) {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    await updateDoc(doc(db, "users", profile.uid), { cart });
+  }
+  localStorage.removeItem("cart");
+  window.dispatchEvent(new Event("cartUpdated"));
+  await signOut(auth);
+  router.push("/login");
+};
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [field]: e.target.value });
