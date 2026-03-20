@@ -9,7 +9,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -26,7 +26,7 @@ type CartItem = {
 export default function PaymentPage() {
   const [clientSecret, setClientSecret] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
-  
+
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
@@ -39,11 +39,11 @@ export default function PaymentPage() {
       const cartTotal = parsedCart.reduce(
         (sum: number, item: CartItem) => sum + item.price * item.quantity, 0
       );
-
+      const cartTotalWithGst = cartTotal * 1.18;
       fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: cartTotal }),
+        body: JSON.stringify({ amount: cartTotalWithGst }),
       })
         .then(res => res.json())
         .then(data => setClientSecret(data.clientSecret));
@@ -52,76 +52,83 @@ export default function PaymentPage() {
 
   return (
     <ProtectedRoute>
-    <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1rem", color: "#fff" }}>
-      <p style={{ fontSize: 15, fontWeight: 700, marginBottom: "2rem" }}>
-        TurNext <span style={{ color: "#555" }}>›_</span>
-      </p>
+      <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1rem", color: "#fff" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
 
-      {/* Steps */}
-      <div style={{ display: "flex", gap: 6, fontSize: 12, marginBottom: "2rem" }}>
-        {["Cart", "Shipping", "Payment", "Confirm"].map((s, i) => (
-          <span key={s} style={{ color: i === 2 ? "#fff" : "#555", fontWeight: i === 2 ? 500 : 400 }}>
-            {i > 0 && <span style={{ marginRight: 6 }}>›</span>}{s}
-          </span>
-        ))}
-      </div>
+          <p style={{ fontSize: 15, fontWeight: 700, marginBottom: "2rem" }}>
+            TurNext <span style={{ color: "#555" }}>›_</span>
+          </p>
 
-      <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: "1.75rem" }}>Payment</h1>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "2rem", maxWidth: 900 }}>
-        <div>
-          {clientSecret ? (
-            <Elements
-              stripe={stripePromise}
-              options={{
-                clientSecret,
-                appearance: {
-                  theme: "night",
-                  variables: {
-                    colorBackground: "#111",
-                    colorText: "#ffffff",
-                    colorPrimary: "#ffffff",
-                    borderRadius: "10px",
-                    fontFamily: "inherit",
-                  },
-                },
-              }}
-            >
-              <PaymentForm cart={cart} total={total} />
-            </Elements>
-          ) : (
-            <div style={{ color: "#555", fontSize: 14 }}>Loading payment...</div>
-          )}
-        </div>
-
-        {/* Order summary */}
-        <div>
-          <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>Order summary</p>
-          <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "1.5rem" }}>
-            {cart.map((item) => (
-              <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                <img src={item.img} alt={item.name} style={{ width: 52, height: 52, borderRadius: 8, objectFit: "cover", background: "#2a2a2a" }} />
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 13, fontWeight: 500 }}>{item.name}</p>
-                  <p style={{ fontSize: 12, color: "#555", marginTop: 2 }}>x{item.quantity}</p>
-                </div>
-                <p style={{ fontSize: 13, fontWeight: 500 }}>${(item.price * item.quantity).toFixed(2)}</p>
-              </div>
+          {/* Steps */}
+          <div style={{ display: "flex", gap: 6, fontSize: 12, marginBottom: "2rem" }}>
+            {["Cart", "Shipping", "Payment", "Confirm"].map((s, i) => (
+              <span key={s} style={{ color: i === 2 ? "#fff" : "#555", fontWeight: i === 2 ? 500 : 400 }}>
+                {i > 0 && <span style={{ marginRight: 6 }}>›</span>}{s}
+              </span>
             ))}
-            <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
-            {[["Subtotal", `$${subtotal.toFixed(2)}`], ["GST (18%)", `$${gst.toFixed(2)}`], ["Shipping", "Free"]].map(([k, v]) => (
-                <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#888", marginBottom: 8 }}>
-                  <span>{k}</span><span>{v}</span>
+          </div>
+
+          <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: "1.75rem" }}>Payment</h1>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "2rem" }}>
+            <div>
+              {clientSecret ? (
+                <Elements
+                  stripe={stripePromise}
+                  options={{
+                    clientSecret,
+                    appearance: {
+                      theme: "night",
+                      variables: {
+                        colorBackground: "#111",
+                        colorText: "#ffffff",
+                        colorPrimary: "#ffffff",
+                        borderRadius: "10px",
+                        fontFamily: "inherit",
+                      },
+                    },
+                  }}
+                >
+                  <PaymentForm cart={cart} total={total} />
+                </Elements>
+              ) : (
+                <div style={{ color: "#555", fontSize: 14 }}>Loading payment...</div>
+              )}
+            </div>
+
+            {/* Order summary */}
+            <div>
+              <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>Order summary</p>
+              <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "1.5rem", position: "sticky", top: 80 }}>
+                {cart.map((item) => (
+                  <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                    <img src={item.img} alt={item.name} style={{ width: 52, height: 52, borderRadius: 8, objectFit: "cover", background: "#2a2a2a" }} />
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontSize: 13, fontWeight: 500 }}>{item.name}</p>
+                      <p style={{ fontSize: 12, color: "#555", marginTop: 2 }}>x{item.quantity}</p>
+                    </div>
+                    <p style={{ fontSize: 13, fontWeight: 500 }}>${(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+                <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
+                {[
+                  ["Subtotal", `$${subtotal.toFixed(2)}`],
+                  ["GST (18%)", `$${gst.toFixed(2)}`],
+                  ["Shipping", "Free"],
+                ].map(([k, v]) => (
+                  <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#888", marginBottom: 8 }}>
+                    <span>{k}</span><span>{v}</span>
+                  </div>
+                ))}
+                <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 600, color: "#fff" }}>
+                  <span>Total</span><span>${total.toFixed(2)}</span>
                 </div>
-              ))}
-            <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, fontWeight: 600, color: "#fff" }}>
-              <span>Total</span><span>${total.toFixed(2)}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </ProtectedRoute>
   );
 }
@@ -153,23 +160,22 @@ function PaymentForm({ cart, total }: { cart: CartItem[]; total: number }) {
       try {
         const shipping = JSON.parse(localStorage.getItem("shipping") || "{}");
 
-        // Save order to Firestore
         const orderRef = await addDoc(collection(db, "orders"), {
           items: cart,
           total,
           shipping,
           status: "paid",
           paymentIntentId: paymentIntent.id,
+          userId: auth.currentUser?.uid,
+          userEmail: auth.currentUser?.email,
           createdAt: serverTimestamp(),
         });
 
-        // Decrement stock
         for (const item of cart) {
           const productRef = doc(db, "products", item.id);
           await updateDoc(productRef, { stock: increment(-item.quantity) });
         }
 
-        // Clear cart and shipping
         localStorage.removeItem("cart");
         localStorage.removeItem("shipping");
         window.dispatchEvent(new Event("cartUpdated"));

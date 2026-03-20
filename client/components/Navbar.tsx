@@ -151,8 +151,6 @@ export default function Navbar() {
             </span>
           )}
         </Link>
-
-        <SlidersHorizontal size={22} style={{ cursor: "pointer" }} />
       </div>
     </nav>
   );
