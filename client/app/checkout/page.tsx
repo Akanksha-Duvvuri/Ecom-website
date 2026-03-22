@@ -15,9 +15,9 @@ type CartItem = {
 export default function CheckoutPage() {
   const router = useRouter();
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({
+  const [loading, setLoading] = useState(false); //if page doesnt load - loading...
+  const [error, setError] = useState(""); //starts as an empty string, shows only when there is an error.
+  const [form, setForm] = useState({  //one state object is holding all form fields, better than having 7 seperate useState calls
     firstName: "", lastName: "", email: "",
     address: "", city: "", zip: "", country: "",
   });
@@ -27,19 +27,19 @@ export default function CheckoutPage() {
     if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0); //reduce basically processes a list or array of elements and condenses them into a signle final value
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({ ...form, [field]: e.target.value });
+  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => //curried function - a function that returns another function. 
+    setForm({ ...form, [field]: e.target.value }); //whenever theres an input change - it changes the form / updates that field
 
   const handleSubmit = async () => {
     if (!form.firstName || !form.email || !form.address) {
       setError("Please fill in all required fields.");
       return;
     }
-    localStorage.setItem("shipping", JSON.stringify(form));
+    localStorage.setItem("shipping", JSON.stringify(form)); //saves shipping form to local storage so that the payment page can access it
     router.push("/payment");
   };
 
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
             {["Cart", "Shipping", "Payment", "Confirm"].map((s, i) => (
               <span key={s} style={{ color: i === 1 ? "#fff" : "#555", fontWeight: i === 1 ? 500 : 400 }}>
                 {i > 0 && <span style={{ marginRight: 6 }}>›</span>}{s}
-              </span>
+              </span>  //maps over the 4 checkout steps and then here i === 1(index is 1) for shipping, so thats the current step and its highlighted.
             ))}
           </div>
 
@@ -164,7 +164,7 @@ function Field({ label, type = "text", placeholder, value, onChange }: {
           boxSizing: "border-box",
         }}
         onFocus={e => e.target.style.borderColor = "#555"}
-        onBlur={e => e.target.style.borderColor = "#2a2a2a"}
+        onBlur={e => e.target.style.borderColor = "#2a2a2a"} //borders turn white when focused and dim when you leave. 
       />
     </div>
   );

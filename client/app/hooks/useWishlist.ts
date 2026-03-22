@@ -7,7 +7,7 @@ export function useWishlist() {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
+  useEffect(() => { //loads wishlist on authentication
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) { setWishlist([]); setUserId(null); return; }
       setUserId(user.uid);
@@ -22,12 +22,12 @@ export function useWishlist() {
   const toggle = async (productId: string) => {
     if (!userId) return;
     const ref = doc(db, "users", userId);
-    const isWishlisted = wishlist.includes(productId);
-    if (isWishlisted) {
-      await updateDoc(ref, { wishlist: arrayRemove(productId) });
-      setWishlist(prev => prev.filter(id => id !== productId));
+    const isWishlisted = wishlist.includes(productId); //already there
+    if (isWishlisted) { 
+      await updateDoc(ref, { wishlist: arrayRemove(productId) }); //removing
+      setWishlist(prev => prev.filter(id => id !== productId));  //filters it out
     } else {
-      await updateDoc(ref, { wishlist: arrayUnion(productId) });
+      await updateDoc(ref, { wishlist: arrayUnion(productId) }); //array union is a firestore helper that adds a value to an array only if it doesnt already exist
       setWishlist(prev => [...prev, productId]);
     }
   };

@@ -1,18 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js"; // initializes stripe with my public key
 import {
-  Elements,
-  PaymentElement,
-  useStripe,
-  useElements,
+  Elements, //stripes context provider
+  PaymentElement, //ready made payment UI component
+  useStripe, //hooks to access stripe inside the form
+  useElements, //same as usestripe
 } from "@stripe/react-stripe-js";
-import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, updateDoc, increment } from "firebase/firestore";  //updatedoc - updates an existing firestore document and //increment - firestore helper to increase a number field automatically
 import { db, auth } from "@/lib/firebase";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+//loads stripe, ! tells ts that the value exists-  this is a primise(stripe loads asynchronously)
 
 type CartItem = {
   id: string;
@@ -24,7 +25,7 @@ type CartItem = {
 };
 
 export default function PaymentPage() {
-  const [clientSecret, setClientSecret] = useState("");
+  const [clientSecret, setClientSecret] = useState(""); //the secret key that stripe sends back starts empty until the API responds
   const [cart, setCart] = useState<CartItem[]>([]);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -39,7 +40,7 @@ export default function PaymentPage() {
       const cartTotal = parsedCart.reduce(
         (sum: number, item: CartItem) => sum + item.price * item.quantity, 0
       );
-      fetch("/api/create-payment-intent", {
+      fetch("/api/create-payment-intent", {  //backend talks to stripe and creates a payment intent, returns clientsecret - this gets saved to state and triggers stripes payment form to render. 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: cartTotal * 1.18 }),
@@ -155,7 +156,7 @@ function PaymentForm({ cart, total }: { cart: CartItem[]; total: number }) {
 
     const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
       elements,
-      redirect: "if_required",
+      redirect: "if_required", //sends card details to stripe and redirects only if the payment method requires it. otherwise stays on the page. 
     });
 
     if (stripeError) {
@@ -181,7 +182,7 @@ function PaymentForm({ cart, total }: { cart: CartItem[]; total: number }) {
         for (const item of cart) {
           const productRef = doc(db, "products", item.id);
           await updateDoc(productRef, { stock: increment(-item.quantity) });
-        }
+        } //reduce stock for each item
 
         localStorage.removeItem("cart");
         localStorage.removeItem("shipping");

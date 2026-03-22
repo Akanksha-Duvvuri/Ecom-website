@@ -17,7 +17,7 @@ type UserProfile = {
     zip: string;
     country: string;
   };
-  wishlist?: string[]; 
+  wishlist?: string[]; // ? means its optional - older accounts may not have it. 
 };
 
 type Order = {
@@ -30,16 +30,16 @@ type Order = {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null); 
   const [orders, setOrders] = useState<Order[]>([]);
-  const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [form, setForm] = useState({ name: "", phone: "", street: "", city: "", zip: "", country: "" });
-  const [tab, setTab] = useState<"profile" | "orders" | "wishlist">("profile");
-  const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
+  const [editing, setEditing] = useState(false); //toggles for edit more
+  const [saving, setSaving] = useState(false); //save in progress
+  const [saved, setSaved] = useState(false); //shows "changes saved!" feedback
+  const [form, setForm] = useState({ name: "", phone: "", street: "", city: "", zip: "", country: "" }); //editable form fields
+  const [tab, setTab] = useState<"profile" | "orders" | "wishlist">("profile"); 
+  const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);  //product objects
 
-useEffect(() => {
+useEffect(() => { //loads everything at once. 
   const unsub = onAuthStateChanged(auth, async (user) => {
     if (!user) { router.push("/login"); return; }
 
@@ -81,7 +81,7 @@ useEffect(() => {
 }, []);
 
 
-  const handleSave = async () => {
+  const handleSave = async () => { //updates firestore with the new form values and updates local profile also. 
     if (!profile) return;
     setSaving(true);
     await updateDoc(doc(db, "users", profile.uid), {
@@ -103,13 +103,13 @@ useEffect(() => {
 
 const handleSignOut = async () => {
   if (profile) {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]"); //saves the cart to firestore before signing out
     await updateDoc(doc(db, "users", profile.uid), { cart });
   }
   localStorage.removeItem("cart");
   window.dispatchEvent(new Event("cartUpdated"));
   await signOut(auth);
-  router.push("/login");
+  router.push("/login"); //redirects to log in
 };
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -209,16 +209,16 @@ const handleSignOut = async () => {
             {editing ? (
               <>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <Field label="Display name" value={form.name} onChange={set("name")} placeholder="Your name" />
-                  <Field label="Phone" value={form.phone} onChange={set("phone")} placeholder="+1 234 567 8900" />
+                  <Field label="Display name" value={form.name} onChange={set("name")} placeholder="" />
+                  <Field label="Phone" value={form.phone} onChange={set("phone")} placeholder="" />
                 </div>
                 <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", margin: "1rem 0 10px" }}>Shipping address</p>
-                <Field label="Street" value={form.street} onChange={set("street")} placeholder="123 Main St" />
+                <Field label="Street" value={form.street} onChange={set("street")} placeholder="" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <Field label="City" value={form.city} onChange={set("city")} placeholder="New York" />
-                  <Field label="ZIP" value={form.zip} onChange={set("zip")} placeholder="10001" />
+                  <Field label="City" value={form.city} onChange={set("city")} placeholder="" />
+                  <Field label="ZIP" value={form.zip} onChange={set("zip")} placeholder="" />
                 </div>
-                <Field label="Country" value={form.country} onChange={set("country")} placeholder="United States" />
+                <Field label="Country" value={form.country} onChange={set("country")} placeholder=" " />
 
                 <div style={{ display: "flex", gap: 8, marginTop: "1rem" }}>
                   <button onClick={handleSave} disabled={saving} style={{
@@ -375,7 +375,7 @@ const handleSignOut = async () => {
                           <button
                             onClick={async () => {
                               if (!profile) return;
-                              const { arrayRemove } = await import("firebase/firestore");
+                              const { arrayRemove } = await import("firebase/firestore"); //imported inside the button click because its a dynamic import - loads the function only when needed. 
                               await updateDoc(doc(db, "users", profile.uid), {
                                 wishlist: arrayRemove(product.id),
                               });

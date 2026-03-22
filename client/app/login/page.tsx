@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
+  signInWithPopup, //used to trigger the google sign in popup
   GoogleAuthProvider
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -14,23 +14,23 @@ import { sendPasswordResetEmail } from "firebase/auth";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [tab, setTab] = useState("login");
+  const [tab, setTab] = useState("login"); //controls whether to show login or sign up
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
 
-  const googleProvider = new GoogleAuthProvider();
+  const googleProvider = new GoogleAuthProvider(); //creates a google auth provider instance.  
 
  const handleGoogle = async () => {
   setError("");
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
-    const snap = await getDoc(doc(db, "users", user.uid));
+    const snap = await getDoc(doc(db, "users", user.uid));  //after the google signin, it checks if the user already exists.
     if (!snap.exists()) {
-      // New user — create profile with empty cart
+      // New user — create profile with empty cart and clears localstorage cart since its a new account
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email,
@@ -43,7 +43,7 @@ export default function LoginPage() {
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
     } else {
-      // Existing user — restore their cart
+      // Existing user — restore their cart and localstorage
       const firestoreCart = snap.data().cart || [];
       localStorage.setItem("cart", JSON.stringify(firestoreCart));
       window.dispatchEvent(new Event("cartUpdated"));
@@ -68,7 +68,7 @@ export default function LoginPage() {
   }
 };
 
-const handleSubmit = async () => {
+const handleSubmit = async () => { //login or signup via email and password directly
   setError("");
   try {
     if (tab === "login") {

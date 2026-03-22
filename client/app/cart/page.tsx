@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-type CartItem = {
+type CartItem = { //object in ts
   id: string;
   name: string;
   price: number;
@@ -18,7 +18,7 @@ export default function CartPage() {
   const router = useRouter();
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  useEffect(() => {
+  useEffect(() => { //load cart from the localstorage
     const stored = localStorage.getItem("cart");
     if (stored) setCart(JSON.parse(stored));
   }, []);
@@ -42,11 +42,11 @@ export default function CartPage() {
   const decrease = (id: string) => {
     updateCart(cart
       .map((item) => item.id === id ? { ...item, quantity: item.quantity - 1 } : item)
-      .filter((item) => item.quantity > 0));
+      .filter((item) => item.quantity > 0));  //filters out any item that hits quantity as 0
   };
 
   const removeItem = (id: string) => {
-    updateCart(cart.filter((item) => item.id !== id));
+    updateCart(cart.filter((item) => item.id !== id));  //filters out the item with that id from the array
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -195,7 +195,7 @@ export default function CartPage() {
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = "#e8e8e8")}
                   onMouseLeave={e => (e.currentTarget.style.background = "#fff")}
-                  onMouseDown={e => (e.currentTarget.style.transform = "scale(0.98)")}
+                  onMouseDown={e => (e.currentTarget.style.transform = "scale(0.95)")}
                   onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
                 >
                   Proceed to Checkout

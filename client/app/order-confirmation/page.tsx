@@ -1,10 +1,11 @@
 "use client";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation"; //uusesearchparams is a react router and next js hook used to read and modify the query string (parameters after ?). Returns a URLsearchparams object to get paraneters and a setter function to update them. 
+import { Suspense } from "react"; //enables you to declaritively manage asynchronous operations in your components (ex, a loading spinner while waiting for components to load). Helps you display a fallback UI(like a loading spinner while waiting for the content or data to load.)
 
 function OrderConfirmationContent() {
-  const params = useSearchParams();
+  const params = useSearchParams(); //reads from the URL query string. example - //Example URL: /order-confirmation?orderId=abc123xyz456
+//params.get("orderId") extracts "abc123xyz456"
   const router = useRouter();
   const orderId = params.get("orderId");
 
@@ -96,8 +97,8 @@ function OrderConfirmationContent() {
 export default function OrderConfirmationPage() {
   return (
     <ProtectedRoute>
-    <Suspense fallback={<div style={{ background: "#0f0f0f", minHeight: "100vh" }} />}>
-      <OrderConfirmationContent />
+    <Suspense fallback={<div style={{ background: "#0f0f0f", minHeight: "100vh" }} />}> 
+      <OrderConfirmationContent /> {/* basically while the OrderConfirmationContent is loading - it showa a plain dark screen as fallback - once its ready, it renders the actual content} */}
     </Suspense>
     </ProtectedRoute>
   );
