@@ -17,6 +17,7 @@ client/.next
 .env
 
 server/.env
+.env.local
 
 # testing
 /coverage
@@ -31,8 +32,6 @@ server/.env
 # misc
 .DS_Store
 *.pem
-
-.env.local
 
 # debug
 npm-debug.log*
