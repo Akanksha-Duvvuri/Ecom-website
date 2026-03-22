@@ -31,7 +31,7 @@ export default function Hero() {
         fontWeight: 400,
         color: "#fff",
         lineHeight: 1.1,
-        letterSpacing: "-0.03em",
+        letterSpacing: "-0.02em",
         marginBottom: "1.5rem",
         maxWidth: 800,
         fontFamily: "inherit",

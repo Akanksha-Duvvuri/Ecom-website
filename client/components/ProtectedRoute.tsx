@@ -4,14 +4,15 @@ import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+export default function ProtectedRoute({ children }: { children: React.ReactNode }) { //children is whatever page or component is wrapped inside the >protectedroute> tag
+//React.reactnode means it can be any valid jsx
   const router = useRouter();
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(true);  //starts as true - so checking is initally true until authenticated. 
 
-  useEffect(() => {
+  useEffect(() => { //auth check
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) router.push("/login");
-      else setChecking(false);
+      else setChecking(false);  //auth done
     });
     return () => unsub();
   }, []);
@@ -22,5 +23,5 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     </div>
   );
 
-  return <>{children}</>;
+  return <>{children}</>;  //once is loads - returns the child page which was wrapped in protectedroute ka tag
 }

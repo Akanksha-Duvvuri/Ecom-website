@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore"; //getdocs is to retrieve multiple documents within a collection
 import { db } from "@/lib/firebase";
 
-type Product = {
+type Product = { //defining an object in typescript
   id: string;
   name: string;
   price: number;
@@ -16,7 +16,7 @@ type Product = {
 };
 
 export default function FeaturedProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]); //Starts as an empty array until data loads from firestore
 
   useEffect(() => { //retrives from the firebase firestore
     const fetchProducts = async () => { //what this does is it goes to the database, goes to the collection named products and gets all the documents from there. 
@@ -25,7 +25,8 @@ export default function FeaturedProducts() {
 
         const productList = snapshot.docs.map((doc) => ({
           id: doc.id,
-          ...(doc.data() as Omit<Product, "id">), //gets document ka id and converts it to a JS object
+          ...(doc.data() as Omit<Product, "id">), //ts way of saying that this data has all the profuct fields except for id because id is obtained seperately 
+          //doc.data - all the other fields of the product
         }));
 
         setProducts(productList);
@@ -44,7 +45,7 @@ export default function FeaturedProducts() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(330px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(330px, 1fr))",  //fr is fraction
           gap: "30px",
         }}
       >

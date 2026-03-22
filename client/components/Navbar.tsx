@@ -1,18 +1,18 @@
 "use client";
 import { Terminal, User, ShoppingCart, Search, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { useRouter } from "next/navigation";  //used to navigate between pages (router.push("/"))
+import { useEffect, useState } from "react";  //usestate - manages local state in the component and useEffect runs side efftects like fetching data or listening to auth changes etctec... 
+import { onAuthStateChanged } from "firebase/auth";   //a firebase functions that listens in real-time to whether a user is logged in or logged out, automatically triggers a callback whenever auth state changes
+import { doc, getDoc } from "firebase/firestore";  //doc - creates a ref to a specifix firestory document (like a pointer) and getdoc - actually fetches that document's data from the db
+import { auth, db } from "@/lib/firebase";  //instances from the local file - auth - firebase authentication instance and db is firestore db instance
 
 export default function Navbar() {
-  const [count, setCount] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
+  const [count, setCount] = useState(0);  //cart item count
+  const [searchQuery, setSearchQuery] = useState("");  //search input value 
+  const [isAdmin, setIsAdmin] = useState(false);  //admin visibility
+  const [menuOpen, setMenuOpen] = useState(false); //dropdown for mobile
+  const router = useRouter(); 
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -31,7 +31,7 @@ export default function Navbar() {
         const cart = JSON.parse(stored);
         setCount(cart.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0));
       } catch { setCount(0); }
-    };
+    };   //reads the cart from local storage and sums up the number of items in the cart
 
     updateCount();
     window.addEventListener("cartUpdated", updateCount);
@@ -44,7 +44,7 @@ export default function Navbar() {
       } else {
         setIsAdmin(false);
       }
-    });
+    });  //checks if a user logs in - (checks if the auth state is changed) - if yes -> then check is the user is admin - if true- show the admin link if false, then dont show. 
 
     return () => {
       window.removeEventListener("cartUpdated", updateCount);
@@ -86,8 +86,8 @@ export default function Navbar() {
             type="text"
             placeholder="Search products..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleSearch()}
+            onChange={e => setSearchQuery(e.target.value)}     //everytime you type a char in the input - e.target.value is whatever is being typed right? so it updates the searchquery in real time. 
+            onKeyDown={e => e.key === "Enter" && handleSearch()}  //press enter or the search icon - it searches. 
             style={{
               padding: "8px 12px", width: "280px",
               borderRadius: 6, border: "1px solid #2a2a2a",
@@ -132,7 +132,7 @@ export default function Navbar() {
           {/* Hamburger */}
           <button
             className="hamburger"
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => setMenuOpen(!menuOpen)}  //flips the boolean on everyclick.
             style={{
               background: "transparent", border: "none",
               cursor: "pointer", color: "#fff", padding: 0,
