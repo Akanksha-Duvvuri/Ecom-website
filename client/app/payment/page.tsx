@@ -39,11 +39,10 @@ export default function PaymentPage() {
       const cartTotal = parsedCart.reduce(
         (sum: number, item: CartItem) => sum + item.price * item.quantity, 0
       );
-      const cartTotalWithGst = cartTotal * 1.18;
       fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: cartTotalWithGst }),
+        body: JSON.stringify({ amount: cartTotal * 1.18 }),
       })
         .then(res => res.json())
         .then(data => setClientSecret(data.clientSecret));
@@ -52,7 +51,16 @@ export default function PaymentPage() {
 
   return (
     <ProtectedRoute>
-      <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1rem", color: "#fff" }}>
+      <style>{`
+        .payment-grid { display: grid; grid-template-columns: 1fr 320px; gap: 2rem; }
+        .payment-summary { position: sticky; top: 80px; }
+        @media (max-width: 700px) {
+          .payment-grid { grid-template-columns: 1fr; }
+          .payment-summary { position: static; }
+        }
+      `}</style>
+
+      <div style={{ background: "#0f0f0f", minHeight: "100vh", padding: "2rem 1.25rem", color: "#fff" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
 
           <p style={{ fontSize: 15, fontWeight: 700, marginBottom: "2rem" }}>
@@ -60,7 +68,7 @@ export default function PaymentPage() {
           </p>
 
           {/* Steps */}
-          <div style={{ display: "flex", gap: 6, fontSize: 12, marginBottom: "2rem" }}>
+          <div style={{ display: "flex", gap: 6, fontSize: 12, marginBottom: "2rem", flexWrap: "wrap" }}>
             {["Cart", "Shipping", "Payment", "Confirm"].map((s, i) => (
               <span key={s} style={{ color: i === 2 ? "#fff" : "#555", fontWeight: i === 2 ? 500 : 400 }}>
                 {i > 0 && <span style={{ marginRight: 6 }}>›</span>}{s}
@@ -70,7 +78,7 @@ export default function PaymentPage() {
 
           <h1 style={{ fontSize: 22, fontWeight: 600, marginBottom: "1.75rem" }}>Payment</h1>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "2rem" }}>
+          <div className="payment-grid">
             <div>
               {clientSecret ? (
                 <Elements
@@ -97,17 +105,17 @@ export default function PaymentPage() {
             </div>
 
             {/* Order summary */}
-            <div>
+            <div className="payment-summary">
               <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>Order summary</p>
-              <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "1.5rem", position: "sticky", top: 80 }}>
+              <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "1.5rem" }}>
                 {cart.map((item) => (
                   <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                    <img src={item.img} alt={item.name} style={{ width: 52, height: 52, borderRadius: 8, objectFit: "cover", background: "#2a2a2a" }} />
-                    <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 13, fontWeight: 500 }}>{item.name}</p>
+                    <img src={item.img} alt={item.name} style={{ width: 52, height: 52, borderRadius: 8, objectFit: "cover", background: "#2a2a2a", flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name}</p>
                       <p style={{ fontSize: 12, color: "#555", marginTop: 2 }}>x{item.quantity}</p>
                     </div>
-                    <p style={{ fontSize: 13, fontWeight: 500 }}>${(item.price * item.quantity).toFixed(2)}</p>
+                    <p style={{ fontSize: 13, fontWeight: 500, flexShrink: 0 }}>${(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 ))}
                 <hr style={{ border: "none", borderTop: "1px solid #2a2a2a", margin: "14px 0" }} />
@@ -159,7 +167,6 @@ function PaymentForm({ cart, total }: { cart: CartItem[]; total: number }) {
     if (paymentIntent?.status === "succeeded") {
       try {
         const shipping = JSON.parse(localStorage.getItem("shipping") || "{}");
-
         const orderRef = await addDoc(collection(db, "orders"), {
           items: cart,
           total,
@@ -179,7 +186,6 @@ function PaymentForm({ cart, total }: { cart: CartItem[]; total: number }) {
         localStorage.removeItem("cart");
         localStorage.removeItem("shipping");
         window.dispatchEvent(new Event("cartUpdated"));
-
         router.push("/order-confirmation?orderId=" + orderRef.id);
       } catch (err: any) {
         setError(err.message);
