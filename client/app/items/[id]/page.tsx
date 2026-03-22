@@ -1,12 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";  //use params -  allows functional components top access dynamic parameters from the current URL. Example- /products/1 - shows the first  product details and page. Used to know which product to fetch from the firestore
 import Image from "next/image";
 import Footer from "@/components/Footer";
-import { doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "firebase/firestore";  //adddoc - add annew document to a firestore collection. Firestore autogenerates a ID. 
+//query - lets you build a query on a collection. By itself does nothing, but combining it with other functions like orderBy, where makes it act like an actual db query
+//orderBy - for sorting 
+//serverTimestamp - uses the firebase server time
 import { db, auth } from "@/lib/firebase";
 
-type Item = {
+type Item = { //ts object
   id: string;
   name: string;
   price: number;
@@ -30,46 +33,46 @@ export default function ProductPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  const [product, setProduct] = useState<Item | null>(null);
-  const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [added, setAdded] = useState(false);
-  const [sizeError, setSizeError] = useState(false);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [rating, setRating] = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [comment, setComment] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [reviewError, setReviewError] = useState("");
+  const [product, setProduct] = useState<Item | null>(null); //product data
+  const [quantity, setQuantity] = useState(1);  //initially set the quantity as 1
+  const [selectedSize, setSelectedSize] = useState<string | null>(null); //size
+  const [added, setAdded] = useState(false); //added feedback
+  const [sizeError, setSizeError] = useState(false); //size not selected error
+  const [reviews, setReviews] = useState<Review[]>([]); // review list
+  const [rating, setRating] = useState(0); //star rating input
+  const [hoverRating, setHoverRating] = useState(0); //star hover effect
+  const [comment, setComment] = useState(""); //review text input
+  const [submitting, setSubmitting] = useState(false); //submit in progress
+  const [submitted, setSubmitted] = useState(false); //submit success
+  const [reviewError, setReviewError] = useState(""); //review validation error
 
-  useEffect(() => {
+  useEffect(() => {  //fetching products and reviews
     if (!id) return;
     const fetchAll = async () => {
-      const ref = doc(db, "products", id);
+      const ref = doc(db, "products", id);  //fetches the product by its id from the db
       const snap = await getDoc(ref);
       if (snap.exists()) {
         setProduct({ id: snap.id, ...(snap.data() as Omit<Item, "id">) });
       }
-      const reviewsRef = collection(db, "products", id, "reviews");
-      const q = query(reviewsRef, orderBy("createdAt", "desc"));
+      const reviewsRef = collection(db, "products", id, "reviews"); //fetches the review  subcollection inside that product document
+      const q = query(reviewsRef, orderBy("createdAt", "desc"));  //newest reviews  first
       const reviewSnap = await getDocs(q);
       setReviews(reviewSnap.docs.map(d => ({ id: d.id, ...d.data() } as Review)));
     };
     fetchAll();
-  }, [id]);
+  }, [id]); //dependency - here its dependent on the id - changes when id changes
 
   function addToCart() {
     if (!product) return;
     if (!selectedSize) {
       setSizeError(true);
-      setTimeout(() => setSizeError(false), 2000);
+      setTimeout(() => setSizeError(false), 2000); //2 sec - checks in milli seconds
       return;
     }
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existing = cart.find((item: any) => item.id === product.id && item.size === selectedSize);
+    const existing = cart.find((item: any) => item.id === product.id && item.size === selectedSize); //checking if theres a product that exists in cart with the same if and size
     if (existing) {
-      existing.quantity += quantity;
+      existing.quantity += quantity;  //if existing, increase the quantity
     } else {
       cart.push({
         id: product.id, name: product.name,
@@ -78,9 +81,9 @@ export default function ProductPage() {
       });
     }
     localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
+    window.dispatchEvent(new Event("cartUpdated"));  //saves updated cart to the localstorage and then the navbar updates the cart count badge from the cartupdated evemt
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    setTimeout(() => setAdded(false), 2000);   //shows added to cart for 2 seconds and then resets to false
   }
 
   const submitReview = async () => {
@@ -91,7 +94,7 @@ export default function ProductPage() {
     setSubmitting(true);
     setReviewError("");
     const reviewsRef = collection(db, "products", id, "reviews");
-    const ref = await addDoc(reviewsRef, {
+    const ref = await addDoc(reviewsRef, {  //adding a new document to the collection
       userId: user.uid,
       userName: user.displayName || "Anonymous",
       rating, comment: comment.trim(),
