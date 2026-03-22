@@ -180,8 +180,8 @@ export default function Navbar() {
           {[
             { href: "/", label: "Home" },
             { href: "/shop", label: "Shop" },
-            { href: "/profile", label: "Account" },
-            { href: "/cart", label: `Cart (${count})` },
+            // { href: "/profile", label: "Account" },
+            // { href: "/cart", label: `Cart (${count})` },
             ...(isAdmin ? [{ href: "/admin", label: "Admin" }] : []),
           ].map(({ href, label }) => (
             <Link
