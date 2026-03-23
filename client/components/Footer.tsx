@@ -1,6 +1,7 @@
 "use client";
 
 import { Github, Instagram, Twitter } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -30,13 +31,23 @@ export default function Footer() {
           <h4>More</h4>
           <p>About</p>
           <p>Contact</p>
-          <p>Support</p>
+          <p>Cart</p>
+        </div>
+
+        <div>
+          <p>Account</p>
+          <p>Home</p>
+          <p>Orders</p>
         </div>
 
         <div>
           <h4>Follow Us</h4>
           <div style={{ display: "flex", gap: "15px", marginTop: "10px" }}>
+
+          <Link href="https://github.com/Akanksha-Duvvuri/Ecom-website">
             <Github />
+          </Link>
+            
             <Instagram />
             <Twitter />
           </div>
