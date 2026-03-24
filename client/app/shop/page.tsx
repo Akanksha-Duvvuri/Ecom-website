@@ -44,17 +44,22 @@ function ShopContent() {
   const categories = ["all", ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))];
 
   const filtered = products
-    .filter(p => {
-              const s = search.toLowerCase();
-              const name = p.name.toLowerCase();
-              const category = p.category?.toLowerCase() || "";
-              return (
-                name.includes(s) ||
-                category.includes(s) ||
-                name.includes(s.endsWith("s") ? s.slice(0, -1) : s + "s") ||
-                category.includes(s.endsWith("s") ? s.slice(0, -1) : s + "s")
-              );
-            })
+  .filter(p => {
+    const s = search.toLowerCase();
+    const name = p.name.toLowerCase();
+    const cat = p.category?.toLowerCase() || "";
+
+    const matchesSearch =
+      name.includes(s) ||
+      cat.includes(s) ||
+      name.includes(s.endsWith("s") ? s.slice(0, -1) : s + "s") ||
+      cat.includes(s.endsWith("s") ? s.slice(0, -1) : s + "s");
+
+    const matchesCategory =
+      category === "all" || cat === category.toLowerCase();
+
+    return matchesSearch && matchesCategory;
+  })
     .sort((a, b) => {
       if (sort === "price-asc") return a.price - b.price;
       if (sort === "price-desc") return b.price - a.price;
