@@ -27,7 +27,7 @@ export default function Categories() {
           {CATEGORIES.map(({ label, emoji, query }) => (
             <div
               key={label}
-              onClick={() => router.push(`/shop?q=${query}`)}
+              onClick={() => router.push(`/shop?q=${query.toLowerCase()}`)}
               style={{
                 background: "#1a1a1a", border: "1px solid #2a2a2a",
                 borderRadius: 14, padding: "1.5rem 1rem",

@@ -275,7 +275,14 @@ export default function AdminPage() {
                       <button onClick={saveProduct} disabled={saving} style={btn()}>
                         {saving ? "Saving..." : "Save"}
                       </button>
-                      <button onClick={() => setEditingProduct(null)} style={btn("transparent", "#555")}>
+                      <button onClick={() => setEditingProduct({
+                              ...product,
+                              name: product.name || "",
+                              price: product.price || 0,
+                              img: product.img || "",
+                              category: product.category || "",
+                              stock: product.stock || 0,
+                            })} style={btn("transparent", "#aaa")}>
                         Cancel
                       </button>
                     </div>
