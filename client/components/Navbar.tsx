@@ -57,8 +57,9 @@ export default function Navbar() {
       <style>{`
         .nav-search { display: flex; align-items: center; gap: 8px; }
         .nav-hamburger { display: none; }
-        @media (max-width: 640px) {
+        @media (max-width: 700px) {
           .nav-search { display: none !important; }
+          .nav-icons { display: none !important; }
           .nav-hamburger { display: flex !important; }
         }
       `}</style>
@@ -110,7 +111,8 @@ export default function Navbar() {
         </div>
 
         {/* Right */}
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+        <div className = "nav-icons"
+        style={{ display: "flex", alignItems: "center", gap: 18 }}>
           {isAdmin && (
             <Link href="/admin" style={{ fontSize: 13, color: "#aaa", textDecoration: "none" }}>
               Admin
@@ -139,8 +141,8 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-
-          {/* Hamburger — mobile only */}
+        </div>
+         {/* Hamburger — mobile only */}
           <button
             className="nav-hamburger"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -152,7 +154,6 @@ export default function Navbar() {
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-        </div>
       </nav>
 
       {/* Mobile dropdown */}
