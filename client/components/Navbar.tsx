@@ -1,5 +1,5 @@
 "use client";
-import { Terminal, User, ShoppingCart, Search, Menu, X, ShoppingBag } from "lucide-react";
+import { Terminal, User, ShoppingCart, Search, Menu, X, ShoppingBag, House} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -76,10 +76,11 @@ export default function Navbar() {
         zIndex: 1000,
       }}>
 
+
         {/* Left */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Terminal size={24} color="#fff" />
-          <Link href="/" style={{ textDecoration: "none", color: "#fff" }}>
+          <Link href="/about" style={{ textDecoration: "none", color: "#fff" }}>
             <h2 style={{ margin: 0, fontWeight: 600, fontSize: 18 }}>TurNext</h2>
           </Link>
         </div>
@@ -115,6 +116,9 @@ export default function Navbar() {
               Admin
             </Link>
           )}
+          <Link href="/">
+            <Terminal size={22} color="#fff" style={{ cursor: "pointer" }} />
+          </Link>
           <Link href="/shop">
             <ShoppingBag size={22} color="#fff" style={{ cursor: "pointer" }} />
           </Link>

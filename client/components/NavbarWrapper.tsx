@@ -4,6 +4,6 @@ import Navbar from "@/components/Navbar";
 
 export default function NavbarWrapper() {
   const pathname = usePathname();
-  if (pathname === "/login") return null;
+  if (pathname === "/login" || pathname == "/about") return null;
   return <Navbar />;
 }
