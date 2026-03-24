@@ -1,18 +1,18 @@
 "use client";
-import { Terminal, User, ShoppingCart, Search, Menu, X } from "lucide-react";
+import { Terminal, User, ShoppingCart, Search, Menu, X, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";  //used to navigate between pages (router.push("/"))
-import { useEffect, useState } from "react";  //usestate - manages local state in the component and useEffect runs side efftects like fetching data or listening to auth changes etctec... 
-import { onAuthStateChanged } from "firebase/auth";   //a firebase functions that listens in real-time to whether a user is logged in or logged out, automatically triggers a callback whenever auth state changes
-import { doc, getDoc } from "firebase/firestore";  //doc - creates a ref to a specifix firestory document (like a pointer) and getdoc - actually fetches that document's data from the db
-import { auth, db } from "@/lib/firebase";  //instances from the local file - auth - firebase authentication instance and db is firestore db instance
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 
 export default function Navbar() {
-  const [count, setCount] = useState(0);  //cart item count
-  const [searchQuery, setSearchQuery] = useState("");  //search input value 
-  const [isAdmin, setIsAdmin] = useState(false);  //admin visibility
-  const [menuOpen, setMenuOpen] = useState(false); //dropdown for mobile
-  const router = useRouter(); 
+  const [count, setCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -31,7 +31,7 @@ export default function Navbar() {
         const cart = JSON.parse(stored);
         setCount(cart.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0));
       } catch { setCount(0); }
-    };   //reads the cart from local storage and sums up the number of items in the cart
+    };
 
     updateCount();
     window.addEventListener("cartUpdated", updateCount);
@@ -44,7 +44,7 @@ export default function Navbar() {
       } else {
         setIsAdmin(false);
       }
-    });  //checks if a user logs in - (checks if the auth state is changed) - if yes -> then check is the user is admin - if true- show the admin link if false, then dont show. 
+    });
 
     return () => {
       window.removeEventListener("cartUpdated", updateCount);
@@ -55,24 +55,25 @@ export default function Navbar() {
   return (
     <>
       <style>{`
-        .search-bar { display: flex; }
-        .hamburger { display: none; }
+        .nav-search { display: flex; align-items: center; gap: 8px; }
+        .nav-hamburger { display: none; }
         @media (max-width: 640px) {
-          .search-bar { display: none !important; }
-          .hamburger { display: block !important; }
+          .nav-search { display: none !important; }
+          .nav-hamburger { display: flex !important; }
         }
       `}</style>
 
       <nav style={{
-        display: "flex", alignItems: "center",
+        display: "flex",
+        alignItems: "center",
         justifyContent: "space-between",
-        padding: "15px 20px",
-        borderBottom: "1px solid #2a2a2a",
-        // backgroundColor: "#000",
-        backgroundColor: "rgba(0, 0, 0, 0.3)",
-        backdropFilter: "blur(10px)",
+        padding: "15px 40px",
         borderBottom: "1px solid rgba(255,255,255,0.1)",
-        position: "sticky", top: 0, zIndex: 1000,
+        backgroundColor: "rgba(0,0,0,0.3)",
+        backdropFilter: "blur(10px)",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
       }}>
 
         {/* Left */}
@@ -83,14 +84,14 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Center — search (hidden on mobile) */}
-        <div className="search-bar" style={{ alignItems: "center", gap: 8 }}>
+        {/* Center — search */}
+        <div className="nav-search">
           <input
             type="text"
             placeholder="Search products..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}     //everytime you type a char in the input - e.target.value is whatever is being typed right? so it updates the searchquery in real time. 
-            onKeyDown={e => e.key === "Enter" && handleSearch()}  //press enter or the search icon - it searches. 
+            onChange={e => setSearchQuery(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSearch()}
             style={{
               padding: "8px 12px", width: "280px",
               borderRadius: 6, border: "1px solid #2a2a2a",
@@ -110,10 +111,13 @@ export default function Navbar() {
         {/* Right */}
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           {isAdmin && (
-            <Link href="/admin" style={{ fontSize: 13, color: "#555", textDecoration: "none" }}>
+            <Link href="/admin" style={{ fontSize: 13, color: "#aaa", textDecoration: "none" }}>
               Admin
             </Link>
           )}
+          <Link href="/shop">
+            <ShoppingBag size={22} color="#fff" style={{ cursor: "pointer" }} />
+          </Link>
           <Link href="/profile">
             <User size={22} color="#fff" style={{ cursor: "pointer" }} />
           </Link>
@@ -132,14 +136,14 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Hamburger */}
+          {/* Hamburger — mobile only */}
           <button
-            className="hamburger"
-            onClick={() => setMenuOpen(!menuOpen)}  //flips the boolean on everyclick.
+            className="nav-hamburger"
+            onClick={() => setMenuOpen(!menuOpen)}
             style={{
               background: "transparent", border: "none",
               cursor: "pointer", color: "#fff", padding: 0,
-              display: "flex", alignItems: "center",
+              alignItems: "center",
             }}
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -155,7 +159,6 @@ export default function Navbar() {
           padding: "1rem 20px", gap: 12,
           position: "sticky", top: 57, zIndex: 999,
         }}>
-          {/* Mobile search */}
           <div style={{ display: "flex", gap: 8 }}>
             <input
               type="text"
@@ -179,25 +182,19 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Mobile links */}
           {[
             { href: "/", label: "Home" },
             { href: "/shop", label: "Shop" },
-            // { href: "/profile", label: "Account" },
-            // { href: "/cart", label: `Cart (${count})` },
+            { href: "/profile", label: "Account" },
+            { href: "/cart", label: `Cart (${count})` },
             ...(isAdmin ? [{ href: "/admin", label: "Admin" }] : []),
           ].map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setMenuOpen(false)}
-              style={{
-                fontSize: 15, color: "#fff",
-                textDecoration: "none",
-                padding: "10px 0",
-                borderBottom: "1px solid #1a1a1a",
-              }}
-            >
+            <Link key={href} href={href} onClick={() => setMenuOpen(false)} style={{
+              fontSize: 15, color: "#fff",
+              textDecoration: "none",
+              padding: "10px 0",
+              borderBottom: "1px solid #1a1a1a",
+            }}>
               {label}
             </Link>
           ))}
