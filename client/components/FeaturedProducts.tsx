@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { collection, getDocs, limit, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useWishlist } from "@/app/hooks/useWishlist";
 
 type Product = {
   id: string;
@@ -15,6 +16,7 @@ type Product = {
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
+  const { wishlist, toggle } = useWishlist(); 
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -64,6 +66,22 @@ export default function FeaturedProducts() {
               >
                 <div style={{ position: "relative", width: "100%", paddingBottom: "100%", background: "#2a2a2a" }}>
                   <Image src={product.img} alt={product.name} fill style={{ objectFit: "cover" }} />
+                      <button
+                            onClick={e => { e.stopPropagation(); toggle(product.id); }}
+                            style={{
+                              position: "absolute", top: 10, right: 10,
+                              width: 34, height: 34, borderRadius: "50%",
+                              background: "rgba(0,0,0,0.6)", border: "none",
+                              cursor: "pointer", display: "flex", alignItems: "center",
+                              justifyContent: "center", fontSize: 16, zIndex: 1,
+                              transition: "transform 0.15s",
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.15)")}
+                            onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+                            >
+                            {wishlist.includes(product.id) ? " ★" : "☆"}
+                            </button>
+
                   {product.stock === 0 && (
                     <div style={{
                       position: "absolute", top: 10, left: 10,
