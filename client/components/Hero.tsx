@@ -88,19 +88,6 @@ export default function Hero() {
           >
             Shop now
           </Link>
-          <Link href="/shop" style={{
-            fontSize: 14, fontWeight: 500, color: "#fff",
-            background: "transparent", textDecoration: "none",
-            padding: "13px 40px", borderRadius: 10,
-            border: "1px solid rgba(255,255,255,0.3)",
-            transition: "all 0.15s",
-            display: "inline-block",
-          }}
-            onMouseEnter={e => { (e.currentTarget.style.borderColor = "#fff"); }}
-            onMouseLeave={e => { (e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"); }}
-          >
-            View collection
-          </Link>
         </div>
       </div>
     </section>

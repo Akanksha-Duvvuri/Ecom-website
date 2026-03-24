@@ -3,10 +3,11 @@ import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
   { label: "Hoodies", emoji: "🧥", query: "Hoodies" },
-  { label: "Tees", emoji: "👕", query: "Tees" },
+  { label: "Tops", emoji: "👕", query: "Shirts" },
   { label: "Hats", emoji: "🧢", query: "Hats" },
   { label: "Pants", emoji: "👖", query: "Pants" },
   { label: "Accessories", emoji: "🕶️", query: "Accessories" },
+  { label: "Shoes", emoji: "👟", query: "Shoes" },
 ];
 
 export default function Categories() {
