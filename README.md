@@ -8,6 +8,8 @@ TurNext is a modern full-stack e-commerce web application built using Next.js, F
 
 - Product browsing with dynamic data from Firestore
 - Search & filtering on the shop page
+- Category-based filtering
+- Sorting (price low–high, high–low, name A–Z)
 - Individual product pages with size selector and stock-aware quantity control
 - Product reviews with star ratings, stored in Firestore
 - Wishlist — add/remove products, synced to Firestore
@@ -195,7 +197,7 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 - Order confirmation emails
 - Discount codes and coupons
 - Multi-currency support
-- Filter and sort products by rating or price
+- Advanced filtering (price range, ratings)
 - Multiple product images with gallery view
 - Admin analytics dashboard (revenue, top products)
 - Order tracking with real shipping integration
