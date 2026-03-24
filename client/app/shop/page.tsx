@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import Image from "next/image";
 import { useWishlist } from "../hooks/useWishlist";
+import Footer from "@/components/Footer";
 
 type Product = {
   id: string;
@@ -222,6 +223,7 @@ export default function ShopPage() {
   return (
     <Suspense fallback={<div style={{ background: "#0f0f0f", minHeight: "100vh" }} />}>
       <ShopContent />
+      <Footer />
     </Suspense>
   );
 }

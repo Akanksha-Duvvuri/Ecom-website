@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Terminal } from "lucide-react"
+import Footer from "@/components/Footer";
 
 export default function AboutPage() {
   const router = useRouter();
@@ -130,6 +131,7 @@ export default function AboutPage() {
           Shop now
         </Link>
       </div>
+       <Footer />
     </div>
   );
 }

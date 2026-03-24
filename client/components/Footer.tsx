@@ -28,16 +28,27 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4>More</h4>
-          <p>About</p>
-          <p>Contact</p>
-          <p>Cart</p>
+          <Link href="/">
+              <p>More</p>
+          </Link>
+          <Link href="/about">
+              <p>About</p>
+          </Link>
+          <Link href="/about">
+              <p>Contact</p>
+          </Link>
         </div>
 
         <div>
-          <p>Account</p>
-          <p>Home</p>
-          <p>Orders</p>
+          <Link href="/profile">
+              <p>Account</p>
+          </Link>
+          <Link href="/">
+              <p>Home</p>
+          </Link>
+         <Link href="/cart">
+              <p>Cart</p>
+          </Link>
         </div>
 
         <div>

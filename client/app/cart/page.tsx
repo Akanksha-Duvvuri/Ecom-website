@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Footer from "@/components/Footer";
 
 type CartItem = { //object in ts
   id: string;
@@ -209,6 +210,7 @@ export default function CartPage() {
           )}
         </div>
       </div>
+      <Footer />
     </ProtectedRoute>
   );
 }

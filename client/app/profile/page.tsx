@@ -5,6 +5,7 @@ import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc, collection, query, where, orderBy, getDocs, arrayRemove } from "firebase/firestore";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Footer from "@/components/Footer";
 
 type UserProfile = {
   uid: string;
@@ -401,6 +402,7 @@ const handleSignOut = async () => {
             )}
       </div>
     </div>
+     <Footer />
     </ProtectedRoute>
   );
 }
