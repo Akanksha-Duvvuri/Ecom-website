@@ -2,12 +2,12 @@
 import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
-  { label: "Hoodies", emoji: "🧥", query: "Hoodies" },
-  { label: "Tops", emoji: "👕", query: "Shirts" },
-  { label: "Hats", emoji: "🧢", query: "Hats" },
-  { label: "Pants", emoji: "👖", query: "Pants" },
-  { label: "Accessories", emoji: "🕶️", query: "Accessories" },
-  { label: "Shoes", emoji: "👟", query: "Shoes" },
+  { label: "Hoodies", query: "Hoodies" },
+  { label: "Tops",  query: "Shirts" },
+  { label: "Hats",  query: "Hats" },
+  { label: "Pants", query: "Pants" },
+  { label: "Accessories",  query: "Accessories" },
+  { label: "Shoes", query: "Shoes" },
 ];
 
 export default function Categories() {
