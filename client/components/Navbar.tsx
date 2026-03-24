@@ -68,7 +68,10 @@ export default function Navbar() {
         justifyContent: "space-between",
         padding: "15px 20px",
         borderBottom: "1px solid #2a2a2a",
-        backgroundColor: "#000",
+        // backgroundColor: "#000",
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
+        backdropFilter: "blur(10px)",
+        borderBottom: "1px solid rgba(255,255,255,0.1)",
         position: "sticky", top: 0, zIndex: 1000,
       }}>
 
