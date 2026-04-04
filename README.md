@@ -154,10 +154,11 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_SECRET_KEY=
+RESEND_API_KEY=
 ```
 
 `NEXT_PUBLIC_` variables are safe to expose to the browser.
-`STRIPE_SECRET_KEY` is server-side only — never exposed to the client.
+`STRIPE_SECRET_KEY` and `RESEND_API_KEY` are server-side only — never exposed to the client.
 
 ---
 
@@ -192,14 +193,45 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 
 ---
 
-## Future Improvements
-//in progres 
-- Order confirmation emails
-- Discount codes and coupons
-- Multi-currency support
-- Advanced filtering (price range, ratings)
-- Multiple product images with gallery view
-- Admin analytics dashboard (revenue, top products)
-- Order tracking with real shipping integration
+## Updates - Future Improvements
 
----
+### Must-do 
+
+- [ ] Firestore security rules — lock writes so users can only modify their own data
+- [ ] Input validation on checkout — validate name, address, zip before calling Stripe
+- [ ] Loading states — skeleton screens on product list, cart, and profile page
+- [ ] Error boundaries — catch and display errors gracefully, no white screens
+- [ ] Toast notifications — feedback on add-to-cart, wishlist, profile save, and errors
+- [ ] 404 page — custom not-found page for missing products/routes
+- [ ] Empty states — empty cart, empty wishlist, no search results
+
+### High impact 
+
+- [ ] Order confirmation email — send via Resend from the Stripe API route after payment
+- [ ] SEO metadata — `generateMetadata()` per product page with title, description, og:image
+- [ ] Next.js `<Image>` everywhere — replace all `<img>` tags, add `priority` on hero images
+- [ ] Stripe webhook — handle `payment_intent.succeeded` server-side for reliable order creation
+
+### Good additions 
+
+- [ ] Price range filter — slider on shop page (filtering infra already exists)
+- [ ] Product image gallery — multiple images per product with thumbnail strip
+- [ ] Discount / coupon codes — coupon collection in Firestore + Stripe coupon API
+- [ ] Shop pagination — Firestore cursor-based pagination using `startAfter`
+- [ ] Admin analytics dashboard — revenue totals, order counts, top products from orders collection
+- [ ] Rating filter on shop page — filter by minimum star rating
+- [ ] Password reset flow — `sendPasswordResetEmail` on the login page
+
+### Polish 
+
+- [ ] Accessibility audit — alt text, aria-labels on icon buttons, keyboard nav on modals
+- [ ] Review edit / delete — let users edit or remove their own reviews
+- [ ] Stock badge on product card — show "Only 2 left" when stock drops below 5
+- [ ] Mobile menu close on nav — hamburger menu closes when a link is tapped
+- [ ] Scroll to top on page change — prevent carrying scroll position between product pages
+
+### Save for later
+
+- [ ] Multi-currency support — requires geo-IP, exchange rates, and Stripe currency config
+- [ ] Real shipping integration — ShipStation / EasyPost adds significant ops complexity
+- [ ] Order tracking — needs carrier API integration
