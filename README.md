@@ -193,7 +193,7 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 ---
 
 ## Future Improvements
-
+//in progres 
 - Order confirmation emails
 - Discount codes and coupons
 - Multi-currency support
