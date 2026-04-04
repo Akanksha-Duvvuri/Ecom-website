@@ -121,13 +121,13 @@ export default function Navbar() {
           <Link href="/">
             <Terminal size={22} color="#fff" style={{ cursor: "pointer" }} />
           </Link>
-          <Link href="/shop">
+          <Link href="/shop" aria-label="Shop">
             <ShoppingBag size={22} color="#fff" style={{ cursor: "pointer" }} />
           </Link>
-          <Link href="/profile">
+          <Link href="/profile" aria-label="Account">
             <User size={22} color="#fff" style={{ cursor: "pointer" }} />
           </Link>
-          <Link href="/cart" style={{ position: "relative" }}>
+          <Link href="/cart" style={{ position: "relative" }}  aria-label={`Cart, ${count} items`}>
             <ShoppingCart size={22} color="#fff" style={{ cursor: "pointer" }} />
             {count > 0 && (
               <span style={{
@@ -146,6 +146,7 @@ export default function Navbar() {
           <button
             className="nav-hamburger"
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
             style={{
               background: "transparent", border: "none",
               cursor: "pointer", color: "#fff", padding: 0,

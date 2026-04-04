@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Toast from "@/components/Toast";
+import ScrollToTop from "@/components/ScrollToTop";
 
 export const metadata = {
   title: "TurNext — Shop",
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ErrorBoundary>
+          <ScrollToTop />
         <NavbarWrapper />
         {children}
          <Toast />

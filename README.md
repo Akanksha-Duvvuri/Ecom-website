@@ -8,6 +8,7 @@ TurNext is a modern full-stack e-commerce web application built using Next.js, F
 
 - Product browsing with dynamic data from Firestore
 - Search & filtering on the shop page
+- Price range slider and star rating filter
 - Category-based filtering
 - Sorting (price low–high, high–low, name A–Z)
 - Individual product pages with size selector and stock-aware quantity control
@@ -16,17 +17,26 @@ TurNext is a modern full-stack e-commerce web application built using Next.js, F
 - Add to cart with quantity controls
 - Increase / decrease / remove items from cart
 - Stock limit enforcement (cannot exceed available inventory)
+- Low stock badge ("Only X left") on product cards
 - Order summary with GST (18%) and real-time total calculation
 - Stripe payment integration (card, Google Pay, Apple Pay)
 - Checkout flow — Shipping → Payment → Confirmation
+- Order confirmation email via Resend
 - Automatic stock reduction after purchase
 - Live cart badge updates in navbar
 - Firebase Authentication — email/password and Google sign-in
+- Password reset via email
 - Profile page with editable info, order history, and wishlist
-- Admin dashboard (visible only to admin users)
+- Admin dashboard with analytics, orders, products, and users
 - Cart synced to Firestore on sign out, restored on sign in
 - Protected routes — unauthenticated users redirected to login
 - Responsive UI with mobile hamburger menu
+- Toast notifications for cart, wishlist, and profile actions
+- Error boundary — graceful error screen instead of white crashes
+- Custom 404 page
+- SEO metadata per product page
+- Scroll to top on page navigation
+- Accessibility — aria-labels on all icon buttons
 
 ---
 
@@ -45,6 +55,9 @@ TurNext is a modern full-stack e-commerce web application built using Next.js, F
 ### Payments
 - Stripe (card, Google Pay, Apple Pay)
 
+### Email
+- Resend (order confirmation emails)
+
 ### Deployment
 - Vercel
 
@@ -56,9 +69,10 @@ This project uses a serverless architecture:
 ```
 Next.js (Frontend) → Firebase SDK → Firestore (Database)
                   → Stripe API  → Payment Processing
+                  → Resend API  → Transactional Email
 ```
 
-No custom backend server is required except for a single Next.js API route that creates Stripe Payment Intents securely.
+No custom backend server is required except for Next.js API routes that handle Stripe Payment Intents and order confirmation emails securely.
 
 ---
 
@@ -125,17 +139,18 @@ No custom backend server is required except for a single Next.js API route that 
 ## Core Flow
 ```
 Homepage
- → Browse / Search Products
+ → Browse / Search / Filter Products
  → View Product Page
    → Select size & quantity
    → Read / write reviews
    → Add to wishlist
  → Add to Cart
  → Manage Cart (increase / decrease / remove)
- → Checkout (shipping info)
+ → Checkout (shipping info + validation)
  → Payment (Stripe)
  → Order stored in Firestore
  → Stock updated in Firestore
+ → Confirmation email sent via Resend
  → Order Confirmation page
  → View order history on Profile page
 ```
@@ -179,6 +194,7 @@ Open [http://localhost:3000](http://localhost:3000)
 1. Enable **Email/Password** and **Google** sign-in in Firebase Authentication
 2. Create a Firestore database with these collections: `users`, `products`, `orders`
 3. To make a user an admin, set `isAdmin: true` on their Firestore user document
+4. Deploy Firestore security rules from `firestore.rules`
 
 ---
 
@@ -193,35 +209,13 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 
 ---
 
-## Updates - Future Improvements
+### Future updates
 
-- [x] Firestore security rules — lock writes so users can only modify their own data
-- [x] Input validation on checkout — validate name, address, zip before calling Stripe
-- [x] Loading states — skeleton screens on product list, cart, and profile page
-- [x] Error boundaries — catch and display errors gracefully, no white screens
-- [x] Toast notifications — feedback on add-to-cart, wishlist, profile save, and errors
-- [x] 404 page — custom not-found page for missing products/routes
-- [x] Empty states — empty cart, empty wishlist, no search results
-
-- [x] Order confirmation email — send via Resend from the Stripe API route after payment
-- [x] SEO metadata — `generateMetadata()` per product page with title, description, og:image
-- [x] Next.js `<Image>` everywhere — replace all `<img>` tags, add `priority` on hero images
-- [ ] Stripe webhook — handle `payment_intent.succeeded` server-side for reliable order creation
-
-- [x] Price range filter — slider on shop page (filtering infra already exists)
-- [ ] Product image gallery — multiple images per product with thumbnail strip
-- [ ] Discount / coupon codes — coupon collection in Firestore + Stripe coupon API
-- [ ] Shop pagination — Firestore cursor-based pagination using `startAfter`
-- [x] Admin analytics dashboard — revenue totals, order counts, top products from orders collection
-- [x] Rating filter on shop page — filter by minimum star rating
-- [x] Password reset flow — `sendPasswordResetEmail` on the login page
-
-- [ ] Accessibility audit — alt text, aria-labels on icon buttons, keyboard nav on modals
-- [ ] Review edit / delete — let users edit or remove their own reviews
-- [ ] Stock badge on product card — show "Only 2 left" when stock drops below 5
-- [ ] Mobile menu close on nav — hamburger menu closes when a link is tapped
-- [ ] Scroll to top on page change — prevent carrying scroll position between product pages
-
-- [ ] Multi-currency support — requires geo-IP, exchange rates, and Stripe currency config
-- [ ] Real shipping integration — ShipStation / EasyPost adds significant ops complexity
-- [ ] Order tracking — needs carrier API integration
+- Stripe webhook — handle `payment_intent.succeeded` server-side (needed for production hosting)
+- Product image gallery — multiple images per product with thumbnail strip
+- Discount / coupon codes — coupon collection in Firestore + Stripe coupon API
+- Shop pagination — Firestore cursor-based pagination using `startAfter`
+- Multi-currency support — requires geo-IP, exchange rates, and Stripe currency config
+- Real shipping integration — ShipStation / EasyPost
+- Order tracking — needs carrier API integration
+---
