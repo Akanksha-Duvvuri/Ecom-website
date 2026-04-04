@@ -15,9 +15,9 @@ client/node_modules
 client/.next
 .next
 .env
-
-server/.env
 .env.local
+server/.env
+
 
 # testing
 /coverage
