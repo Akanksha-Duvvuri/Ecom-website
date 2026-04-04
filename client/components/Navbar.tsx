@@ -114,9 +114,9 @@ export default function Navbar() {
         <div className = "nav-icons"
         style={{ display: "flex", alignItems: "center", gap: 18 }}>
           {isAdmin && (
-            <Link href="/admin" style={{ fontSize: 13, color: "#aaa", textDecoration: "none" }}>
+            <span style={{ fontSize: 13, color: "#aaa", cursor: "default" }}>
               Admin
-            </Link>
+            </span>
           )}
           <Link href="/">
             <Terminal size={22} color="#fff" style={{ cursor: "pointer" }} />
@@ -193,7 +193,7 @@ export default function Navbar() {
             { href: "/shop", label: "Shop" },
             { href: "/profile", label: "Account" },
             { href: "/cart", label: `Cart (${count})` },
-            ...(isAdmin ? [{ href: "/admin", label: "Admin" }] : []),
+            ...(isAdmin ? [{ href: "#", label: "Admin", disabled: true }] : []),
           ].map(({ href, label }) => (
             <Link key={href} href={href} onClick={() => setMenuOpen(false)} style={{
               fontSize: 15, color: "#fff",
