@@ -197,15 +197,15 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 
 - [x] Firestore security rules — lock writes so users can only modify their own data
 - [x] Input validation on checkout — validate name, address, zip before calling Stripe
-- [ ] Loading states — skeleton screens on product list, cart, and profile page
-- [ ] Error boundaries — catch and display errors gracefully, no white screens
-- [ ] Toast notifications — feedback on add-to-cart, wishlist, profile save, and errors
-- [ ] 404 page — custom not-found page for missing products/routes
-- [ ] Empty states — empty cart, empty wishlist, no search results
+- [x] Loading states — skeleton screens on product list, cart, and profile page
+- [x] Error boundaries — catch and display errors gracefully, no white screens
+- [x] Toast notifications — feedback on add-to-cart, wishlist, profile save, and errors
+- [x] 404 page — custom not-found page for missing products/routes
+- [x] Empty states — empty cart, empty wishlist, no search results
 
-- [ ] Order confirmation email — send via Resend from the Stripe API route after payment
-- [ ] SEO metadata — `generateMetadata()` per product page with title, description, og:image
-- [ ] Next.js `<Image>` everywhere — replace all `<img>` tags, add `priority` on hero images
+- [x] Order confirmation email — send via Resend from the Stripe API route after payment
+- [x] SEO metadata — `generateMetadata()` per product page with title, description, og:image
+- [x] Next.js `<Image>` everywhere — replace all `<img>` tags, add `priority` on hero images
 - [ ] Stripe webhook — handle `payment_intent.succeeded` server-side for reliable order creation
 
 - [ ] Price range filter — slider on shop page (filtering infra already exists)
@@ -214,7 +214,7 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 - [ ] Shop pagination — Firestore cursor-based pagination using `startAfter`
 - [ ] Admin analytics dashboard — revenue totals, order counts, top products from orders collection
 - [ ] Rating filter on shop page — filter by minimum star rating
-- [ ] Password reset flow — `sendPasswordResetEmail` on the login page
+- [ x Password reset flow — `sendPasswordResetEmail` on the login page
 
 - [ ] Accessibility audit — alt text, aria-labels on icon buttons, keyboard nav on modals
 - [ ] Review edit / delete — let users edit or remove their own reviews

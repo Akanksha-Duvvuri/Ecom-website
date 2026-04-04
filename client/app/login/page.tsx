@@ -62,7 +62,7 @@ export default function LoginPage() {
   try {
     await sendPasswordResetEmail(auth, email);
     setError(""); 
-    alert("Password reset email sent! Check your inbox.");
+    window.showToast("Password reset email sent! Check your inbox.", "info");
   } catch (err: any) {
     setError(err.message);
   }
