@@ -184,6 +184,19 @@ function PaymentForm({ cart, total }: { cart: CartItem[]; total: number }) {
           await updateDoc(productRef, { stock: increment(-item.quantity) });
         } //reduce stock for each item
 
+        await fetch("/api/send-confirmation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: auth.currentUser?.email,
+            name: shipping.firstName,
+            orderId: orderRef.id,
+            items: cart,
+            total,
+            shipping,
+          }),
+        });
+
         localStorage.removeItem("cart");
         localStorage.removeItem("shipping");
         window.dispatchEvent(new Event("cartUpdated"));

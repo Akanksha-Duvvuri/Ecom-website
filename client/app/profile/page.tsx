@@ -6,6 +6,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc, collection, query, where, orderBy, getDocs, arrayRemove } from "firebase/firestore";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Footer from "@/components/Footer";
+import Image from "next/image";
 
 type UserProfile = {
   uid: string;
@@ -359,8 +360,12 @@ const handleSignOut = async () => {
                           style={{ position: "relative", width: "100%", paddingBottom: "100%", background: "#2a2a2a", cursor: "pointer" }}
                         >
                           {product.img && (
-                            <img src={product.img} alt={product.name}
-                              style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover" }} />
+                            <Image
+                                src={product.img}
+                                alt={product.name}
+                                fill
+                                style={{ objectFit: "cover" }}
+                              />
                           )}
                         </div>
 
