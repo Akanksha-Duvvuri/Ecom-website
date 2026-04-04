@@ -208,13 +208,13 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 - [x] Next.js `<Image>` everywhere — replace all `<img>` tags, add `priority` on hero images
 - [ ] Stripe webhook — handle `payment_intent.succeeded` server-side for reliable order creation
 
-- [ ] Price range filter — slider on shop page (filtering infra already exists)
+- [x] Price range filter — slider on shop page (filtering infra already exists)
 - [ ] Product image gallery — multiple images per product with thumbnail strip
 - [ ] Discount / coupon codes — coupon collection in Firestore + Stripe coupon API
 - [ ] Shop pagination — Firestore cursor-based pagination using `startAfter`
-- [ ] Admin analytics dashboard — revenue totals, order counts, top products from orders collection
-- [ ] Rating filter on shop page — filter by minimum star rating
-- [ x Password reset flow — `sendPasswordResetEmail` on the login page
+- [x] Admin analytics dashboard — revenue totals, order counts, top products from orders collection
+- [x] Rating filter on shop page — filter by minimum star rating
+- [x] Password reset flow — `sendPasswordResetEmail` on the login page
 
 - [ ] Accessibility audit — alt text, aria-labels on icon buttons, keyboard nav on modals
 - [ ] Review edit / delete — let users edit or remove their own reviews
