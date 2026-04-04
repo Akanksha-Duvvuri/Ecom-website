@@ -15,9 +15,9 @@ type CartItem = {
 export default function CheckoutPage() {
   const router = useRouter();
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(false); //if page doesnt load - loading...
-  const [error, setError] = useState(""); //starts as an empty string, shows only when there is an error.
-  const [form, setForm] = useState({  //one state object is holding all form fields, better than having 7 seperate useState calls
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
     firstName: "", lastName: "", email: "",
     address: "", city: "", zip: "", country: "",
   });
@@ -27,19 +27,34 @@ export default function CheckoutPage() {
     if (stored) setCart(JSON.parse(stored));
   }, []);
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0); //reduce basically processes a list or array of elements and condenses them into a signle final value
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
-  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => //curried function - a function that returns another function. 
-    setForm({ ...form, [field]: e.target.value }); //whenever theres an input change - it changes the form / updates that field
+  const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm({ ...form, [field]: e.target.value });
+
+  const validate = () => {
+    if (!form.firstName.trim()) return "First name is required.";
+    if (!form.lastName.trim()) return "Last name is required.";
+    if (!form.email.trim()) return "Email is required.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return "Enter a valid email address.";
+    if (!form.address.trim()) return "Address is required.";
+    if (!form.city.trim()) return "City is required.";
+    if (!form.zip.trim()) return "ZIP code is required.";
+    if (!/^\d{4,10}$/.test(form.zip.trim())) return "Enter a valid ZIP code.";
+    if (!form.country.trim()) return "Country is required.";
+    return null;
+  };
 
   const handleSubmit = async () => {
-    if (!form.firstName || !form.email || !form.address) {
-      setError("Please fill in all required fields.");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
       return;
     }
-    localStorage.setItem("shipping", JSON.stringify(form)); //saves shipping form to local storage so that the payment page can access it
+    setError("");
+    localStorage.setItem("shipping", JSON.stringify(form));
     router.push("/payment");
   };
 
@@ -66,7 +81,7 @@ export default function CheckoutPage() {
             {["Cart", "Shipping", "Payment", "Confirm"].map((s, i) => (
               <span key={s} style={{ color: i === 1 ? "#fff" : "#555", fontWeight: i === 1 ? 500 : 400 }}>
                 {i > 0 && <span style={{ marginRight: 6 }}>›</span>}{s}
-              </span>  //maps over the 4 checkout steps and then here i === 1(index is 1) for shipping, so thats the current step and its highlighted.
+              </span>
             ))}
           </div>
 
@@ -74,19 +89,33 @@ export default function CheckoutPage() {
 
           <div className="checkout-grid">
             <div>
-              <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>Shipping info</p>
+              <p style={{ fontSize: 11, color: "#555", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>Shipping info  <br></br> The fields with * are compulsory</p>
               <div style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 14, padding: "1.5rem", marginBottom: "1.25rem" }}>
+
+                {/* First name / Last name */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <Field label="First name" placeholder="" value={form.firstName} onChange={set("firstName")} />
-                  <Field label="Last name" placeholder="" value={form.lastName} onChange={set("lastName")} />
+                  <Field label="First name *" value={form.firstName} onChange={set("firstName")}
+                    hasError={!!error && !form.firstName.trim()} placeholder="" />
+                  <Field label="Last name *" value={form.lastName} onChange={set("lastName")}
+                    hasError={!!error && !form.lastName.trim()} placeholder="" />
                 </div>
-                <Field label="Email" type="email" placeholder="" value={form.email} onChange={set("email")} />
-                <Field label="Address" placeholder="" value={form.address} onChange={set("address")} />
+
+                {/* Full width fields */}
+                <Field label="Email *" type="email" value={form.email} onChange={set("email")}
+                  hasError={!!error && (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))} placeholder="" />
+                <Field label="Address *" value={form.address} onChange={set("address")}
+                  hasError={!!error && !form.address.trim()} placeholder="" />
+
+                {/* City / ZIP */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <Field label="City" placeholder="" value={form.city} onChange={set("city")} />
-                  <Field label="ZIP" placeholder="" value={form.zip} onChange={set("zip")} />
+                  <Field label="City *" value={form.city} onChange={set("city")}
+                    hasError={!!error && !form.city.trim()} placeholder="" />
+                  <Field label="ZIP *" value={form.zip} onChange={set("zip")}
+                    hasError={!!error && !/^\d{4,10}$/.test(form.zip.trim())} placeholder="" />
                 </div>
-                <Field label="Country" placeholder="" value={form.country} onChange={set("country")} />
+
+                <Field label="Country *" value={form.country} onChange={set("country")}
+                  hasError={!!error && !form.country.trim()} placeholder="" />
               </div>
 
               {error && (
@@ -95,15 +124,18 @@ export default function CheckoutPage() {
                 </p>
               )}
 
-              <button onClick={handleSubmit} disabled={loading} style={{
-                width: "100%", padding: 13,
-                background: loading ? "#333" : "#fff",
-                color: loading ? "#888" : "#000",
-                border: "none", borderRadius: 10,
-                fontSize: 14, fontWeight: 600,
-                cursor: loading ? "not-allowed" : "pointer",
-                fontFamily: "inherit", transition: "background 0.15s",
-              }}
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                style={{
+                  width: "100%", padding: 13,
+                  background: loading ? "#333" : "#fff",
+                  color: loading ? "#888" : "#000",
+                  border: "none", borderRadius: 10,
+                  fontSize: 14, fontWeight: 600,
+                  cursor: loading ? "not-allowed" : "pointer",
+                  fontFamily: "inherit", transition: "background 0.15s",
+                }}
                 onMouseEnter={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "#e8e8e8"; }}
                 onMouseLeave={e => { if (!loading) (e.target as HTMLButtonElement).style.background = "#fff"; }}
               >
@@ -149,22 +181,28 @@ export default function CheckoutPage() {
   );
 }
 
-function Field({ label, type = "text", placeholder, value, onChange }: {
+function Field({ label, type = "text", placeholder, value, onChange, hasError = false }: {
   label: string; type?: string; placeholder: string;
   value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  hasError?: boolean;
 }) {
   return (
     <div style={{ marginBottom: 12 }}>
       <label style={{ display: "block", fontSize: 12, color: "#555", marginBottom: 5 }}>{label}</label>
-      <input type={type} placeholder={placeholder} value={value} onChange={onChange}
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
         style={{
           width: "100%", padding: "10px 12px", background: "#111",
-          border: "1px solid #2a2a2a", borderRadius: 10, color: "#fff",
+          border: `1px solid ${hasError ? "#f87171" : "#2a2a2a"}`,
+          borderRadius: 10, color: "#fff",
           fontSize: 14, outline: "none", fontFamily: "inherit",
           boxSizing: "border-box",
         }}
-        onFocus={e => e.target.style.borderColor = "#555"}
-        onBlur={e => e.target.style.borderColor = "#2a2a2a"} //borders turn white when focused and dim when you leave. 
+        onFocus={e => e.target.style.borderColor = hasError ? "#f87171" : "#555"}
+        onBlur={e => e.target.style.borderColor = hasError ? "#f87171" : "#2a2a2a"}
       />
     </div>
   );

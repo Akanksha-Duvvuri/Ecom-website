@@ -195,8 +195,8 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 
 ## Updates - Future Improvements
 
-- [ ] Firestore security rules — lock writes so users can only modify their own data
-- [ ] Input validation on checkout — validate name, address, zip before calling Stripe
+- [x] Firestore security rules — lock writes so users can only modify their own data
+- [x] Input validation on checkout — validate name, address, zip before calling Stripe
 - [ ] Loading states — skeleton screens on product list, cart, and profile page
 - [ ] Error boundaries — catch and display errors gracefully, no white screens
 - [ ] Toast notifications — feedback on add-to-cart, wishlist, profile save, and errors
