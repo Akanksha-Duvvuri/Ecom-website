@@ -195,8 +195,6 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 
 ## Updates - Future Improvements
 
-### Must-do 
-
 - [ ] Firestore security rules — lock writes so users can only modify their own data
 - [ ] Input validation on checkout — validate name, address, zip before calling Stripe
 - [ ] Loading states — skeleton screens on product list, cart, and profile page
@@ -205,14 +203,10 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 - [ ] 404 page — custom not-found page for missing products/routes
 - [ ] Empty states — empty cart, empty wishlist, no search results
 
-### High impact 
-
 - [ ] Order confirmation email — send via Resend from the Stripe API route after payment
 - [ ] SEO metadata — `generateMetadata()` per product page with title, description, og:image
 - [ ] Next.js `<Image>` everywhere — replace all `<img>` tags, add `priority` on hero images
 - [ ] Stripe webhook — handle `payment_intent.succeeded` server-side for reliable order creation
-
-### Good additions 
 
 - [ ] Price range filter — slider on shop page (filtering infra already exists)
 - [ ] Product image gallery — multiple images per product with thumbnail strip
@@ -222,15 +216,11 @@ Add all `.env.local` variables to your Vercel project's environment settings.
 - [ ] Rating filter on shop page — filter by minimum star rating
 - [ ] Password reset flow — `sendPasswordResetEmail` on the login page
 
-### Polish 
-
 - [ ] Accessibility audit — alt text, aria-labels on icon buttons, keyboard nav on modals
 - [ ] Review edit / delete — let users edit or remove their own reviews
 - [ ] Stock badge on product card — show "Only 2 left" when stock drops below 5
 - [ ] Mobile menu close on nav — hamburger menu closes when a link is tapped
 - [ ] Scroll to top on page change — prevent carrying scroll position between product pages
-
-### Save for later
 
 - [ ] Multi-currency support — requires geo-IP, exchange rates, and Stripe currency config
 - [ ] Real shipping integration — ShipStation / EasyPost adds significant ops complexity
